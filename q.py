@@ -62,6 +62,7 @@ class Quiz:
     def weight_questions(self):
 
         question_by_id = {}
+        questions_for_random = {}
 
         if not os.access(config_path, os.F_OK): 
             os.mkdir(config_path)
@@ -77,12 +78,13 @@ class Quiz:
                 print(question_id, "factor", question_weights[question_id])
 
             question_by_id[question_id] = q
+            questions_for_random[question_id] = question_weights[question_id]
 
         print("\nWeights:")
-        print(question_weights)
+        print(questions_for_random)
         raw_input("\nQuestions ready....")
         self.question_by_id = question_by_id
-        self.weighted_random.set_weights(question_weights)
+        self.weighted_random.set_weights(questions_for_random)
 
         question_weights.close()
 
