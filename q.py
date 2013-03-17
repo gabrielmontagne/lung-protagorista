@@ -40,7 +40,11 @@ class Quiz:
         self.asker = ask.Asker()
 
     def ask(self):
+
         question_id = self.weighted_random.random()
+
+        raw_input("question_id:" + question_id)
+
         question = self.question_by_id[question_id]
         question_weights = shelve.open(weights_file)
 
@@ -74,7 +78,9 @@ class Quiz:
 
             question_by_id[question_id] = q
 
-        raw_input("Questions ready....")
+        print("\nWeights:")
+        print(question_weights)
+        raw_input("\nQuestions ready....")
         self.question_by_id = question_by_id
         self.weighted_random.set_weights(question_weights)
 
