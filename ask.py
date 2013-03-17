@@ -8,6 +8,7 @@ import subprocess
 
 STOP = "@@ stop @@"
 SEPARATOR = "@@ ============"
+VIM_FT = "@@ vim:ft=diff"
 
 class Asker:
     def ask(self, question, hint = ''):
@@ -20,9 +21,13 @@ class Asker:
         question_lines = [STOP, line_info, SEPARATOR, ""]
         question_lines.extend(question['q'])
         question_lines.extend(["", SEPARATOR])
+
         prompt = "\n\n" +  "\n".join(question_lines)
+
         if hint:
             prompt += "\n\n" + hint + "\n"
+
+        prompt +=  "\n" + VIM_FT
 
         input_lines = self.bleach_lines(self.input_editor(prompt).split("\n"))
 
