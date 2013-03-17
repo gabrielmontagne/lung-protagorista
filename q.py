@@ -1,10 +1,80 @@
 import argparse
+import re
 
 class Quiz:
-  def __init__(self):
+    def __init__(self):
 
-    print("self", str(self))
+        print("self", str(self))
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-f', nargs='*', type=file, required=True)
-    configuration = parser.parse_args()
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-f', nargs='*', type=file, required=True)
+        configuration = parser.parse_args()
+
+        for f in configuration.f:
+            p = LungParser(f)
+            print("f", f, p.questions())
+
+
+class LungParser:
+
+    def __init__(self, lung_file):
+        self.dictify(lung_file)
+
+    def dictify(self, lung_file):
+        print("dictify", lung_file)
+        questions = []
+        current_item = None
+        line_number = 0
+        for line in lung_file:
+            line_number = line_number + 1
+            if len(line.strip()) == 0:
+                continue
+
+            if re.search(r'^%__ END __', line):
+                break
+
+            if re.search(r'^----', line):
+                break
+
+            if re.search(r'^%', line):
+                if current_item and len(current_item['a']):
+                    questions.append(current_item)
+
+                current_item = None
+                continue
+
+            if re.search("^\S", line):
+                if current_item and len(current_item['a']):
+                    questions.append(current_item)
+                    current_item = None;
+
+                if current_item == None:
+                    current_item = {'q': [line.strip()], 'a': [], 'ln': line_number}
+                    try:
+                        current_item['n'] = lung_file.name
+                    except AttributeError:
+                        print "Input doesn't have a name."
+                else:
+                    current_item['q'].append(line.strip())
+
+                continue
+
+            if not current_item:
+                continue
+
+            answer = re.sub(r"^( ){,4}",  "",  line)
+            answer = re.sub(r"#%.*", "", answer)
+            answer = re.sub(r"//%.*", "", answer)
+            answer = answer.rstrip();
+
+            current_item['a'].append(answer)
+
+        if current_item and len(current_item['a']) > 0:
+            questions.append(current_item)
+
+        self.__questions__ = questions
+        return questions
+
+
+    def questions(self):
+        return self.__questions__

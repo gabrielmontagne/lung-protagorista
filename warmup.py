@@ -5,14 +5,14 @@ import q
 
 def main():
 
-  h = md5.new("AAA")
-  print(h.hexdigest())
+    h = md5.new("AAA")
+    print(h.hexdigest())
 
-  run = q.Quiz()
+    run = q.Quiz()
 
 
 
 
 
 if __name__ == "__main__": 
-  main()
+    main()
