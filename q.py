@@ -27,38 +27,39 @@ class Quiz:
             q.extend(module.get_questions())
 
         self.questions = q
-
+        self.weighted_random = weighted_random.WeightedRandom({})
         self.weight_questions()
 
     def ask(self):
-        pass
+        print(self.question_by_id[self.weighted_random.random()])
 
     def weight_questions(self):
 
         config_path = os.path.expanduser("~/.lung")
         weights_file = os.path.expanduser("~/.lung/weights.db")
 
+        question_by_id = {}
+
         # create home folder if not existing
         if not os.access(config_path, os.F_OK): 
             os.mkdir(config_path)
 
-        # open hash cache
-        cache = shelve.open(weights_file)
-        print("cache", cache)
+        question_weights = shelve.open(weights_file)
 
         for q in self.questions:
-
-            question_hash = self.hash_for_question(q)
-
-            if not question_hash in cache:
-                print("initialize factor for q.", question_hash)
-                cache[question_hash] = 1
+            question_id = self.hash_for_question(q)
+            if not question_id in question_weights:
+                print("initialize factor for q.", question_id)
+                question_weights[question_id] = 1
             else:
-                print(question_hash, "factor", cache[question_hash])
+                print(question_id, "factor", question_weights[question_id])
 
-            weight = cache[question_hash]
+            question_by_id[question_id] = q
 
-        cache.close()
+        self.question_by_id = question_by_id
+        self.weighted_random.set_weights(question_weights)
+
+        question_weights.close()
 
     def hash_for_question(self, q):
         return md5.new("\n".join(q['q'])).hexdigest()
