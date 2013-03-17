@@ -44,6 +44,7 @@ class Asker:
                 raise AbortAndReload('aborting')
 
         answer_lines = self.bleach_lines(question['a'])
+
         if input_lines == answer_lines:
             return ""
 

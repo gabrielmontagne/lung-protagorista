@@ -4,12 +4,14 @@
 import q
 import os
 import weighted_random
+import time
 
 
 def main():
     quiz = q.Quiz()
     for x in range(2):
-      print(quiz.ask())
+        quiz.ask()
+      
 
 
 if __name__ == "__main__": 

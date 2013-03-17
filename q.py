@@ -34,6 +34,8 @@ class Quiz:
 
     def ask(self):
         hint = self.asker.ask(self.question_by_id[self.weighted_random.random()])
+        print("H")
+        print(hint)
 
     def weight_questions(self):
 
