@@ -40,7 +40,6 @@ class Quiz:
 
         question_by_id = {}
 
-        # create home folder if not existing
         if not os.access(config_path, os.F_OK): 
             os.mkdir(config_path)
 
