@@ -8,7 +8,7 @@ import weighted_random
 
 def main():
     quiz = q.Quiz()
-    for x in range(10):
+    for x in range(2):
       quiz.ask()
 
 
