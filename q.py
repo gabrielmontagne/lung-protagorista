@@ -3,6 +3,9 @@
 
 import argparse
 import re
+import os
+import shelve
+import md5
 
 class Quiz:
     def __init__(self):
@@ -30,9 +33,21 @@ class Quiz:
         pass
 
     def weight_questions(self):
-        print("weight_questions", self.questions)
+
+        config_path = os.path.expanduser("~/.lung")
+        weights_file = os.path.expanduser("~/.lung/weights.db")
+
+        # create home folder if not existing
+        if not os.access(config_path, os.F_OK): 
+            os.mkdir(config_path)
+
+        # open hash cache
+        cache = shelve.open(weights_file)
+        print("cache", cache)
+
         for q in self.questions:
-            print(q['q'])
+            question_hash = md5.new("\n".join(q['q']))
+            print(question_hash.hexdigest())
 
 class LungParser:
 
