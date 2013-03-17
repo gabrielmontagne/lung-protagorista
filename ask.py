@@ -3,6 +3,7 @@
 
 import re
 import tempfile
+import difflib
 import os
 import subprocess
 
@@ -11,6 +12,9 @@ SEPARATOR = "@@ ============"
 VIM_FT = "@@ vim:ft=diff"
 
 class Asker:
+    def __init__(self):
+        self.differ = difflib.Differ()
+
     def ask(self, question, hint=""):
 
         question_lines = ["", "", STOP]
@@ -31,9 +35,20 @@ class Asker:
 
         input_lines = self.bleach_lines(self.input_editor(prompt).split("\n"))
 
-        print("results", input_lines)
+        if len(input_lines):
+            if input_lines[0] == ':quit':
+                sys.exit(0)
+            if input_lines[0] == ':skip':
+                raise QuestionAbort('aborting')
+            if input_lines[0] == ':reload':
+                raise AbortAndReload('aborting')
 
-        return "hh"
+        answer_lines = self.bleach_lines(question['a'])
+        if input_lines == answer_lines:
+            return ""
+
+        return "\n".join(self.differ.compare(input_lines, answer_lines))
+
 
     def bleach_lines(self, lines):
         """Return only non-empty lines, non-commented out lines."""

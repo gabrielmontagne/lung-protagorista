@@ -9,7 +9,7 @@ import weighted_random
 def main():
     quiz = q.Quiz()
     for x in range(2):
-      quiz.ask()
+      print(quiz.ask())
 
 
 if __name__ == "__main__": 
