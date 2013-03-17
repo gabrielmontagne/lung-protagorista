@@ -51,7 +51,7 @@ class Quiz:
         question = self.question_by_id[question_id]
         question_weights = shelve.open(weights_file)
         hint = self.asker.ask(question)
-        weight = question_weights[question_id] 
+        weight = question_weights[question_id]
 
         if not hint:
             weight *= factor_on_correct
@@ -63,12 +63,8 @@ class Quiz:
                 if hint:
                     weight *= factor_on_wrong_with_hint
                     streak = 0
-                    raw_input("0")
-                else: 
+                else:
                     streak += 1
-                    print("s " + str(streak))
-                    print(streak < correct_without_hint)
-                    raw_input("+1")
 
         question_weights[question_id] = max(min(weight, max_factor), min_factor)
         question_weights.close()
@@ -79,7 +75,7 @@ class Quiz:
         question_by_id = {}
         questions_for_random = {}
 
-        if not os.access(config_path, os.F_OK): 
+        if not os.access(config_path, os.F_OK):
             os.mkdir(config_path)
 
         question_weights = shelve.open(weights_file)
@@ -90,17 +86,13 @@ class Quiz:
                 print("initialize factor for q.", question_id)
                 question_weights[question_id] = 1
             else:
-                print(question_id, "factor", question_weights[question_id])
+                print(q['q'][0], question_id, " ... factor", question_weights[question_id])
 
             question_by_id[question_id] = q
             questions_for_random[question_id] = question_weights[question_id]
 
-        print("\nWeights:")
-        print(questions_for_random)
-        raw_input("\nQuestions ready....")
         self.question_by_id = question_by_id
         self.weighted_random.set_weights(questions_for_random)
-
         question_weights.close()
 
     def hash_for_question(self, q):
@@ -165,7 +157,6 @@ class LungParser:
 
         self.questions = questions
         return questions
-
 
     def get_questions(self):
         return self.questions
