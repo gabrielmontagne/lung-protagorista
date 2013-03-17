@@ -13,6 +13,10 @@ config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
 min_factor = 0.1
 max_factor = 10
+factor_on_correct = 0.5
+factor_on_wrong = 1.5
+factor_on_wrong_with_hint = 1.3
+correct_without_hint = 3
 
 class Quiz:
     def __init__(self):
@@ -44,22 +48,27 @@ class Quiz:
     def ask(self):
 
         question_id = self.weighted_random.random()
-
-        raw_input("question_id:" + question_id)
-
         question = self.question_by_id[question_id]
         question_weights = shelve.open(weights_file)
         hint = self.asker.ask(question)
         weight = question_weights[question_id] 
 
         if not hint:
-            weight *= 0.5
+            weight *= factor_on_correct
         else:
-            weight *= 1.5
-            while hint:
+            weight *= factor_on_wrong
+            streak = 0
+            while hint or streak < correct_without_hint:
                 hint = self.asker.ask(question, hint)
                 if hint:
-                    weight *= 1.1
+                    weight *= factor_on_wrong_with_hint
+                    streak = 0
+                    raw_input("0")
+                else: 
+                    streak += 1
+                    print("s " + str(streak))
+                    print(streak < correct_without_hint)
+                    raw_input("+1")
 
         question_weights[question_id] = max(min(weight, max_factor), min_factor)
         question_weights.close()
