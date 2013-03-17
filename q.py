@@ -61,7 +61,7 @@ class Quiz:
                 if hint:
                     weight *= 1.1
 
-        question_weights[question_id] = weight
+        question_weights[question_id] = max(min(weight, max_factor), min_factor)
         question_weights.close()
         self.weight_questions()
 

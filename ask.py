@@ -52,7 +52,6 @@ class Asker:
 
         return "\n".join(self.differ.compare(input_lines, answer_lines))
 
-
     def bleach_lines(self, lines):
         """Return only non-empty lines, non-commented out lines."""
         if STOP in lines:

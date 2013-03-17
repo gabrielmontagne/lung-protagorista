@@ -9,7 +9,7 @@ import time
 
 def main():
     quiz = q.Quiz()
-    for x in range(2):
+    for x in range(20):
         quiz.ask()
       
 
