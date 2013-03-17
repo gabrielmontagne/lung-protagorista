@@ -7,6 +7,7 @@ import os
 import shelve
 import md5
 import weighted_random
+import ask
 
 class Quiz:
     def __init__(self):
@@ -29,9 +30,10 @@ class Quiz:
         self.questions = q
         self.weighted_random = weighted_random.WeightedRandom({})
         self.weight_questions()
+        self.asker = ask.Asker()
 
     def ask(self):
-        print(self.question_by_id[self.weighted_random.random()])
+        hint = self.asker.ask(self.question_by_id[self.weighted_random.random()])
 
     def weight_questions(self):
 
@@ -62,7 +64,6 @@ class Quiz:
 
     def hash_for_question(self, q):
         return md5.new("\n".join(q['q'])).hexdigest()
-        
 
 class LungParser:
 
