@@ -39,6 +39,10 @@ class Quiz:
                 module = __import__(m)
                 q.extend(module.get_questions())
 
+        if not len(q):
+            raise Exception("No questions extracted, specify -f or -m")
+            
+
         self.questions = q
         self.weighted_random = weighted_random.WeightedRandom({})
         self.weight_questions()
@@ -86,7 +90,7 @@ class Quiz:
         for q in self.questions:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
-                log.write("initialize factor for q: " + q['q'][0] +  "... " + question_id1 + "\n")
+                log.write("initialize factor for q: " + q['q'][0] +  "... " + question_id + "\n")
                 question_weights[question_id] = 1
             else:
                 log.write(q['q'][0] + " ... " +  question_id + ", factor: " + str(question_weights[question_id]) + "\n")

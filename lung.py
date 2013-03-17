@@ -11,8 +11,6 @@ def main():
     quiz = q.Quiz()
     for x in range(20):
         quiz.ask()
-      
-
 
 if __name__ == "__main__": 
     main()
