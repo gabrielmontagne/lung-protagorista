@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import random
+
 class WeightedRandom:
     def __init__(self, weights={}):
         self.set_weights(weights)
@@ -13,10 +18,11 @@ class WeightedRandom:
         weights = self.weights
         for k in weights:
             weight = weights[k]
-            core_list.append({ 'threshold': total , 'value': k })
             total = total + weight
+            core_list.append({ 'threshold': total , 'value': k })
 
-        print(core_list, total)
+        self.core_list = core_list
+        self.total = total
 
 
     def adjust_weight(self, key, weight):
@@ -24,5 +30,8 @@ class WeightedRandom:
         self.recalculate_core_list()
 
     def random(self):
-        return 1
+        index = random.random() * self.total
+        for item in self.core_list:
+            if index < item['threshold']:
+                return item['value']
       
