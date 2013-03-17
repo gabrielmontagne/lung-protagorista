@@ -9,6 +9,9 @@ import md5
 import weighted_random
 import ask
 
+config_path = os.path.expanduser("~/.lung")
+weights_file = os.path.expanduser("~/.lung/weights.db")
+
 class Quiz:
     def __init__(self):
 
@@ -38,9 +41,6 @@ class Quiz:
         print(hint)
 
     def weight_questions(self):
-
-        config_path = os.path.expanduser("~/.lung")
-        weights_file = os.path.expanduser("~/.lung/weights.db")
 
         question_by_id = {}
 
