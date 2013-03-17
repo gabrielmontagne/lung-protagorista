@@ -36,9 +36,14 @@ class Quiz:
         self.asker = ask.Asker()
 
     def ask(self):
-        hint = self.asker.ask(self.question_by_id[self.weighted_random.random()])
-        print("H")
-        print(hint)
+        question = self.question_by_id[self.weighted_random.random()]
+        hint = self.asker.ask(question)
+        question_weights = shelve.open(weights_file)
+
+        if hint:
+            hint = self.asker.ask(question, hint)
+
+        question_weights.close()
 
     def weight_questions(self):
 
