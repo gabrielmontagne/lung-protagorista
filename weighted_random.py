@@ -24,7 +24,6 @@ class WeightedRandom:
         self.core_list = core_list
         self.total = total
 
-
     def adjust_weight(self, key, weight):
         self.weights[key] = weight
         self.recalculate_core_list()
@@ -34,4 +33,3 @@ class WeightedRandom:
         for item in self.core_list:
             if index < item['threshold']:
                 return item['value']
-      
