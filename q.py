@@ -6,6 +6,7 @@ import re
 import os
 import shelve
 import md5
+import weighted_random
 
 class Quiz:
     def __init__(self):
