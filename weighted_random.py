@@ -8,8 +8,16 @@ class WeightedRandom:
 
     def recalculate_core_list(self):
         print("recalculate_core_list")
-        for k in self.weights:
-            print(k, self.weights[k])
+        total = 0
+        core_list = []
+        weights = self.weights
+        for k in weights:
+            weight = weights[k]
+            core_list.append({ 'threshold': total , 'value': k })
+            total = total + weight
+
+        print(core_list, total)
+
 
     def adjust_weight(self, key, weight):
         self.weights[key] = weight

@@ -9,10 +9,9 @@ import weighted_random
 def main():
     wr = weighted_random.WeightedRandom(
       {
-        "aaaa": 1.2
+        "aaaa": 2
       , "bbbb": 3
-      , "ddd": 1
-      , "eee": 10
+      , "cccc": 1
       }
     )
 
