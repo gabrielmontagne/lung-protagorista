@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re
-import tempfile
 import difflib
 import os
+import re
 import subprocess
+import sys
+import tempfile
 
 STOP = "@@ stop @@"
 SEPARATOR = "@@ ============"
@@ -37,6 +38,7 @@ class Asker:
 
         if len(input_lines):
             if input_lines[0] == ':quit':
+                print("... bye")
                 sys.exit(0)
             if input_lines[0] == ':skip':
                 raise QuestionAbort('aborting')

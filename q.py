@@ -11,6 +11,8 @@ import ask
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
+min_factor = 0.1
+max_factor = 10
 
 class Quiz:
     def __init__(self):
@@ -47,15 +49,19 @@ class Quiz:
 
         question = self.question_by_id[question_id]
         question_weights = shelve.open(weights_file)
-
         hint = self.asker.ask(question)
+        weight = question_weights[question_id] 
 
         if not hint:
-            question_weights[question_id] *= 0.5
+            weight *= 0.5
         else:
-            question_weights[question_id] *= 1.5
-            hint = self.asker.ask(question, hint)
+            weight *= 1.5
+            while hint:
+                hint = self.asker.ask(question, hint)
+                if hint:
+                    weight *= 1.1
 
+        question_weights[question_id] = weight
         question_weights.close()
         self.weight_questions()
 
