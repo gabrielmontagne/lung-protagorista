@@ -11,6 +11,7 @@ import ask
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
+log_file = os.path.expanduser("~/.lung/run.log")
 min_factor = 0.1
 max_factor = 10
 factor_on_correct = 0.5
@@ -27,8 +28,6 @@ class Quiz:
         configuration = parser.parse_args()
 
         q = []
-
-        print(configuration)
 
         if configuration.f:
             for f in configuration.f:
@@ -72,24 +71,30 @@ class Quiz:
 
     def weight_questions(self):
 
+
         question_by_id = {}
         questions_for_random = {}
 
         if not os.access(config_path, os.F_OK):
             os.mkdir(config_path)
 
+        log = open(log_file, "a")
+        log.write("weight_questions\n")
+
         question_weights = shelve.open(weights_file)
 
         for q in self.questions:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
-                print("initialize factor for q.", question_id)
+                log.write("initialize factor for q: " + q['q'][0] +  "... " + question_id1 + "\n")
                 question_weights[question_id] = 1
             else:
-                print(q['q'][0], question_id, " ... factor", question_weights[question_id])
+                log.write(q['q'][0] + " ... " +  question_id + ", factor: " + str(question_weights[question_id]) + "\n")
 
             question_by_id[question_id] = q
             questions_for_random[question_id] = question_weights[question_id]
+
+        log.close()
 
         self.question_by_id = question_by_id
         self.weighted_random.set_weights(questions_for_random)
@@ -104,7 +109,6 @@ class LungParser:
         self.dictify(lung_file)
 
     def dictify(self, lung_file):
-        print("dictify", lung_file)
         questions = []
         current_item = None
         line_number = 0
