@@ -46,8 +46,16 @@ class Quiz:
         print("cache", cache)
 
         for q in self.questions:
-            question_hash = md5.new("\n".join(q['q']))
-            print(question_hash.hexdigest())
+
+            question_hash = md5.new("\n".join(q['q'])).hexdigest()
+            print("question_hash", question_hash)
+
+
+            if question_hash in cache:
+                print("question hash", question_hash, "in chache", cache[question_hash])
+            else:
+                print("question hash ", question_hash, "NOT in chache, add")
+                cache[question_hash] = 1
 
 class LungParser:
 
