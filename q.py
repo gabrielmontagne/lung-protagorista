@@ -16,19 +16,23 @@ class Quiz:
     def __init__(self):
 
         parser = argparse.ArgumentParser()
-        parser.add_argument('-f', nargs='+', type=file, required=True)
-        parser.add_argument('-m', nargs='+', type=str, required=True)
+        parser.add_argument('-f', nargs='+', type=file, required=False)
+        parser.add_argument('-m', nargs='+', type=str, required=False)
         configuration = parser.parse_args()
 
         q = []
 
-        for f in configuration.f:
-            p = LungParser(f)
-            q.extend(p.get_questions())
+        print(configuration)
 
-        for m in configuration.m:
-            module = __import__(m)
-            q.extend(module.get_questions())
+        if configuration.f:
+            for f in configuration.f:
+                p = LungParser(f)
+                q.extend(p.get_questions())
+
+        if configuration.m:
+            for m in configuration.m:
+                module = __import__(m)
+                q.extend(module.get_questions())
 
         self.questions = q
         self.weighted_random = weighted_random.WeightedRandom({})
@@ -36,14 +40,20 @@ class Quiz:
         self.asker = ask.Asker()
 
     def ask(self):
-        question = self.question_by_id[self.weighted_random.random()]
-        hint = self.asker.ask(question)
+        question_id = self.weighted_random.random()
+        question = self.question_by_id[question_id]
         question_weights = shelve.open(weights_file)
 
-        if hint:
+        hint = self.asker.ask(question)
+
+        if not hint:
+            question_weights[question_id] *= 0.5
+        else:
+            question_weights[question_id] *= 1.5
             hint = self.asker.ask(question, hint)
 
         question_weights.close()
+        self.weight_questions()
 
     def weight_questions(self):
 
@@ -64,6 +74,7 @@ class Quiz:
 
             question_by_id[question_id] = q
 
+        raw_input("Questions ready....")
         self.question_by_id = question_by_id
         self.weighted_random.set_weights(question_weights)
 
