@@ -34,6 +34,10 @@ class Asker:
 
         prompt = "\n".join(question_lines)
 
+        execute_match = re.match('^ex:(.*)', question['q'][0])
+        if execute_match:
+            os.system(execute_match.groups()[0])
+
         input_lines = self.bleach_lines(self.input_editor(prompt).split("\n"))
 
         if len(input_lines):

@@ -41,7 +41,6 @@ class Quiz:
 
         if not len(q):
             raise Exception("No questions extracted, specify -f or -m")
-            
 
         self.questions = q
         self.weighted_random = weighted_random.WeightedRandom({})
