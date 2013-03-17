@@ -3,20 +3,26 @@ import re
 
 class Quiz:
     def __init__(self):
+
         parser = argparse.ArgumentParser()
         parser.add_argument('-f', nargs='+', type=file, required=True)
         parser.add_argument('-m', nargs='+', type=str, required=True)
         configuration = parser.parse_args()
 
+        q = []
+
         for f in configuration.f:
             p = LungParser(f)
-            print("f", f, p.questions())
+            q.extend(p.get_questions())
 
         for m in configuration.m:
             module = __import__(m)
-            print("m", module.questions())
+            q.extend(module.get_questions())
 
+        print("a", q)
 
+    def ask(self):
+        pass
 
 class LungParser:
 
@@ -75,9 +81,9 @@ class LungParser:
         if current_item and len(current_item['a']) > 0:
             questions.append(current_item)
 
-        self.q = questions
+        self.questions = questions
         return questions
 
 
-    def questions(self):
-        return self.q
+    def get_questions(self):
+        return self.questions
