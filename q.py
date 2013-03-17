@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import argparse
 import re
 
@@ -19,10 +22,17 @@ class Quiz:
             module = __import__(m)
             q.extend(module.get_questions())
 
-        print("a", q)
+        self.questions = q
+
+        self.weight_questions()
 
     def ask(self):
         pass
+
+    def weight_questions(self):
+        print("weight_questions", self.questions)
+        for q in self.questions:
+            print(q['q'])
 
 class LungParser:
 
