@@ -13,12 +13,12 @@ VIM_FT = "@@ vim:ft=diff"
 class Asker:
     def ask(self, question, hint=""):
 
-        if "n" in question:
-            line_info = "## %(n)s:%(ln)s" % question
-        else: 
-            line_info = ""
+        question_lines = ["", "", STOP]
 
-        question_lines = ["", "", STOP, line_info, SEPARATOR, ""]
+        if "n" in question:
+          question_lines.append("## %(n)s:%(ln)s" % question)
+
+        question_lines.extend([SEPARATOR, ""])
         question_lines.extend(question['q'])
         question_lines.extend(["", SEPARATOR])
 
@@ -30,7 +30,6 @@ class Asker:
         prompt = "\n".join(question_lines)
 
         input_lines = self.bleach_lines(self.input_editor(prompt).split("\n"))
-
 
         print("results", input_lines)
 
@@ -53,8 +52,6 @@ class Asker:
         results = f.read()
         os.unlink(f.name)
         return results
-
-
 
 class QuestionAbort(Exception):
     pass
