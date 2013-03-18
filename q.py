@@ -92,7 +92,7 @@ class Quiz:
                 log.write("initialize factor for q: " + q['q'][0] +  "... " + question_id + "\n")
                 question_weights[question_id] = 1
             else:
-                log.write(q['q'][0] + " ... " +  question_id + ", factor: " + str(question_weights[question_id]) + "\n")
+                log.write("\n    ".join(q['q']) + " ... " +  question_id + ", factor: " + str(question_weights[question_id]) + "\n")
 
             question_by_id[question_id] = q
             questions_for_random[question_id] = question_weights[question_id]

@@ -1,4 +1,6 @@
 ex: feh tqm.jpg
-style for border
+color de fondo
 
-    border: 1xp solid black;
+  rosa
+
+
