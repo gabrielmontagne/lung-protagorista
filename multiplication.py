@@ -7,8 +7,8 @@ def get_questions():
         for b in range(13):
             result.append(
               {
-                'q': [ str(a) + ' + ' + str(b)]
-              , 'a': [ str(a + b) ]
+                'q': [ str(a) + ' × ' + str(b)]
+              , 'a': [ str(a * b) ]
               }
             )
     return result
