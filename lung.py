@@ -9,7 +9,7 @@ import time
 
 def main():
     quiz = q.Quiz()
-    for x in range(20):
+    for x in range(200):
         quiz.ask()
 
 if __name__ == "__main__": 
