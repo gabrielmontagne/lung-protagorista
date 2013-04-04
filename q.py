@@ -8,6 +8,7 @@ import shelve
 import md5
 import weighted_random
 import ask
+import time
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
@@ -23,11 +24,15 @@ class Quiz:
     def __init__(self):
 
         parser = argparse.ArgumentParser()
-        parser.add_argument('-f', nargs='+', type=file, required=False)
-        parser.add_argument('-m', nargs='+', type=str, required=False)
+        parser.add_argument('-f', nargs='+', type=file, required=False, help='files')
+        parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
+        parser.add_argument("-s", action='store_true', help='sequential (non random)')
         configuration = parser.parse_args()
 
         q = []
+
+        print("-s? " + str(configuration.s))
+        time.sleep(20)
 
         if configuration.f:
             for f in configuration.f:
@@ -82,7 +87,7 @@ class Quiz:
             os.mkdir(config_path)
 
         log = open(log_file, "a")
-        log.write("weight_questions\n")
+        log.write("\nweight_questions\n")
 
         question_weights = shelve.open(weights_file)
 
