@@ -14,10 +14,10 @@ config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
 log_file = os.path.expanduser("~/.lung/run.log")
 min_factor = 0.1
-max_factor = 10
+max_factor = 100
 factor_on_correct = 0.5
-factor_on_wrong = 1.5
-factor_on_wrong_with_hint = 1.3
+factor_on_wrong = 1.7
+factor_on_wrong_with_hint = 1.4
 correct_without_hint = 3
 
 class Quiz:
@@ -30,9 +30,6 @@ class Quiz:
         configuration = parser.parse_args()
 
         q = []
-
-        print("-s? " + str(configuration.s))
-        time.sleep(20)
 
         if configuration.f:
             for f in configuration.f:
@@ -51,11 +48,19 @@ class Quiz:
         self.weighted_random = weighted_random.WeightedRandom({})
         self.weight_questions()
         self.asker = ask.Asker()
+        self.sequential_index = 0
+        self.sequential_run = configuration.s
 
     def ask(self):
 
-        question_id = self.weighted_random.random()
-        question = self.question_by_id[question_id]
+        if self.sequential_run:
+            question = self.questions[self.sequential_index % len(self.questions)]
+            question_id = self.hash_for_question(question)
+            self.sequential_index += 1
+        else:
+            question_id = self.weighted_random.random()
+            question = self.question_by_id[question_id]
+
         question_weights = shelve.open(weights_file)
         hint = self.asker.ask(question)
         weight = question_weights[question_id]
