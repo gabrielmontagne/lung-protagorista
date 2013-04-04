@@ -8,23 +8,25 @@ import shelve
 import md5
 import weighted_random
 import ask
+import time
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
 log_file = os.path.expanduser("~/.lung/run.log")
 min_factor = 0.1
-max_factor = 10
+max_factor = 100
 factor_on_correct = 0.5
-factor_on_wrong = 1.5
-factor_on_wrong_with_hint = 1.3
+factor_on_wrong = 1.7
+factor_on_wrong_with_hint = 1.4
 correct_without_hint = 3
 
 class Quiz:
     def __init__(self):
 
         parser = argparse.ArgumentParser()
-        parser.add_argument('-f', nargs='+', type=file, required=False)
-        parser.add_argument('-m', nargs='+', type=str, required=False)
+        parser.add_argument('-f', nargs='+', type=file, required=False, help='files')
+        parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
+        parser.add_argument("-s", action='store_true', help='sequential (non random)')
         configuration = parser.parse_args()
 
         q = []
@@ -46,11 +48,19 @@ class Quiz:
         self.weighted_random = weighted_random.WeightedRandom({})
         self.weight_questions()
         self.asker = ask.Asker()
+        self.sequential_index = 0
+        self.sequential_run = configuration.s
 
     def ask(self):
 
-        question_id = self.weighted_random.random()
-        question = self.question_by_id[question_id]
+        if self.sequential_run:
+            question = self.questions[self.sequential_index % len(self.questions)]
+            question_id = self.hash_for_question(question)
+            self.sequential_index += 1
+        else:
+            question_id = self.weighted_random.random()
+            question = self.question_by_id[question_id]
+
         question_weights = shelve.open(weights_file)
         hint = self.asker.ask(question)
         weight = question_weights[question_id]
@@ -82,7 +92,7 @@ class Quiz:
             os.mkdir(config_path)
 
         log = open(log_file, "a")
-        log.write("weight_questions\n")
+        log.write("\nweight_questions\n")
 
         question_weights = shelve.open(weights_file)
 
