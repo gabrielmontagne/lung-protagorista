@@ -8,6 +8,7 @@ import shelve
 import md5
 import weighted_random
 import ask
+import time
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
@@ -25,6 +26,7 @@ class Quiz:
         parser = argparse.ArgumentParser()
         parser.add_argument('-f', nargs='+', type=file, required=False)
         parser.add_argument('-m', nargs='+', type=str, required=False)
+        parser.add_argument('-s', action="store_true", required=False)
         configuration = parser.parse_args()
 
         q = []
@@ -52,7 +54,11 @@ class Quiz:
         question_id = self.weighted_random.random()
         question = self.question_by_id[question_id]
         question_weights = shelve.open(weights_file)
-        hint = self.asker.ask(question)
+        try:
+            hint = self.asker.ask(question)
+        except ask.QuestionAbort:
+            return
+
         weight = question_weights[question_id]
 
         if not hint:
