@@ -67,7 +67,11 @@ class Quiz:
             weight *= factor_on_wrong
             streak = 0
             while hint or streak < correct_without_hint:
-                hint = self.asker.ask(question, hint)
+                try:
+                    hint = self.asker.ask(question, hint)
+                except ask.QuestionAbort:
+                    return
+
                 if hint:
                     weight *= factor_on_wrong_with_hint
                     streak = 0
