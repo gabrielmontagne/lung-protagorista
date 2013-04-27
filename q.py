@@ -24,7 +24,6 @@ class Quiz:
     def __init__(self):
 
         parser = argparse.ArgumentParser()
-
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
         parser.add_argument('-f', nargs='+', type=file, required=False, help='files')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
@@ -63,12 +62,15 @@ class Quiz:
             question_id = self.weighted_random.random()
             question = self.question_by_id[question_id]
 
-        question_weights = shelve.open(weights_file)
         try:
             hint = self.asker.ask(question)
         except ask.QuestionAbort:
             return
+        except ask.AbortAndReload:
+            self.__init__()
+            return
 
+        question_weights = shelve.open(weights_file)
         weight = question_weights[question_id]
 
         if not hint:
@@ -81,6 +83,8 @@ class Quiz:
                     hint = self.asker.ask(question, hint)
                 except ask.QuestionAbort:
                     return
+                except ask.AbortAndReload:
+                    self.__init__()
 
                 if hint:
                     weight *= factor_on_wrong_with_hint
