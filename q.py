@@ -28,7 +28,6 @@ class Quiz:
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
         parser.add_argument('-f', nargs='+', type=file, required=False, help='files')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
-        # parser.add_argument('-s', action="store_true", required=False)
 
         configuration = parser.parse_args()
 
