@@ -1,4 +1,4 @@
-ex: feh tqm.jpg
+ex: feh sample.jpg
 color de fondo
 
   rosa
