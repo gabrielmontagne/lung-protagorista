@@ -146,6 +146,9 @@ class LungParser:
             if re.search(r'^%__ END __', line):
                 break
 
+            if re.search(r'^<!-- END -->', line):
+                break
+
             if re.search(r'^----', line):
                 break
 
