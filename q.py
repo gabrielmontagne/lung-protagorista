@@ -1,14 +1,13 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
+from hashlib import md5
 import argparse
-import re
-import os
-import shelve
-import md5
-import weighted_random
 import ask
+import os
+import re
+import shelve
 import time
+import weighted_random
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
@@ -25,7 +24,7 @@ class Quiz:
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
-        parser.add_argument('-f', nargs='+', type=file, required=False, help='files')
+        parser.add_argument('-f', nargs='+', type=argparse.FileType('r'), required=False, help='files')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
 
         configuration = parser.parse_args()
@@ -127,7 +126,7 @@ class Quiz:
         question_weights.close()
 
     def hash_for_question(self, q):
-        return md5.new("\n".join(q['q'])).hexdigest()
+        return md5(("\n".join(q['q'])).encode()).hexdigest()
 
 class LungParser:
 
@@ -169,7 +168,7 @@ class LungParser:
                     try:
                         current_item['n'] = lung_file.name
                     except AttributeError:
-                        print "Input doesn't have a name."
+                        print("Input doesn't have a name.")
                 else:
                     current_item['q'].append(line.strip())
 

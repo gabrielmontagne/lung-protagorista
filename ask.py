@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 import difflib
 import os
@@ -66,7 +65,7 @@ class Asker:
 
     def input_editor(self, prompt=' '):
         f = tempfile.NamedTemporaryFile(delete=False)
-        f.write(prompt)
+        f.write(prompt.encode('utf-8'))
         f.close()
         call = subprocess.call(["vim", f.name])
         f = open(f.name)
