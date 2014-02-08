@@ -11,7 +11,7 @@ import time
 import weighted_random
 
 config_path = os.path.expanduser("~/.lung")
-weights_file = os.path.expanduser("~/.lung/weights.db")
+weights_file = os.path.expanduser("~/.lung/weights")
 log_file = os.path.expanduser("~/.lung/run.log")
 min_factor = 0.1
 max_factor = 100
@@ -105,17 +105,17 @@ class Quiz:
             os.mkdir(config_path)
 
         log = open(log_file, "a")
-        log.write("\nweight_questions\n")
+        log.write("\nweigh questions\n")
 
         question_weights = shelve.open(weights_file)
 
         for q in self.questions:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
-                log.write("initialize factor for q: " + q['q'][0] +  "... " + question_id + "\n")
+                log.write("initialize factor for q: " + question_id + "\n")
                 question_weights[question_id] = 1
             else:
-                log.write("\n    ".join(q['q']) + " ... " +  question_id + ", factor: " + str(question_weights[question_id]) + "\n")
+                log.write(question_id + ", factor: " + str(question_weights[question_id]) + "\n")
 
             question_by_id[question_id] = q
             questions_for_random[question_id] = question_weights[question_id]

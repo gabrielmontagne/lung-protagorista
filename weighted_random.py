@@ -11,7 +11,6 @@ class WeightedRandom:
         self.recalculate_core_list()
 
     def recalculate_core_list(self):
-        print("recalculate_core_list")
         total = 0
         core_list = []
         weights = self.weights
