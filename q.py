@@ -3,12 +3,12 @@
 from hashlib import md5
 import argparse
 import ask
+import lines
 import os
 import re
 import shelve
 import time
 import weighted_random
-import lines
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
@@ -34,7 +34,7 @@ class Quiz:
 
         if configuration.f:
             for f in configuration.f:
-                p = LungParser(lines.lines(f))
+                p = LungParser(lines.lines(f), f)
                 q.extend(p.get_questions())
 
         if configuration.m:
@@ -131,14 +131,14 @@ class Quiz:
 
 class LungParser:
 
-    def __init__(self, lung_file):
-        self.dictify(lung_file)
+    def __init__(self, lines, name):
+        self.dictify(lines, name)
 
-    def dictify(self, lung_file):
+    def dictify(self, lines, name):
         questions = []
         current_item = None
         line_number = 0
-        for line in lung_file:
+        for line in lines:
             line_number = line_number + 1
             if len(line.strip()) == 0:
                 continue
@@ -167,7 +167,7 @@ class LungParser:
                 if current_item == None:
                     current_item = {'q': [line.strip()], 'a': [], 'ln': line_number}
                     try:
-                        current_item['n'] = lung_file.name
+                        current_item['n'] = name
                     except AttributeError:
                         print("Input doesn't have a name.")
                 else:
