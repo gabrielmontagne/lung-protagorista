@@ -19,7 +19,6 @@ def lines(name):
         print("File", name ,"is NOT encrypted")
         text = open(name, 'r').read()
 
-    print("text!")
     return text.split('\n')
 
 

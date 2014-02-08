@@ -8,6 +8,7 @@ import re
 import shelve
 import time
 import weighted_random
+import lines
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights.db")
@@ -24,7 +25,7 @@ class Quiz:
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
-        parser.add_argument('-f', nargs='+', type=argparse.FileType('r'), required=False, help='files')
+        parser.add_argument('-f', nargs='+', required=False, help='files')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
 
         configuration = parser.parse_args()
@@ -33,7 +34,7 @@ class Quiz:
 
         if configuration.f:
             for f in configuration.f:
-                p = LungParser(f)
+                p = LungParser(lines.lines(f))
                 q.extend(p.get_questions())
 
         if configuration.m:
