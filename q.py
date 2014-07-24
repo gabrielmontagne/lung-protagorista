@@ -26,6 +26,7 @@ class Quiz:
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
         parser.add_argument('-f', nargs='+', required=False, help='files')
+        parser.add_argument('-l', nargs='+', required=False, help='lists')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
 
         configuration = parser.parse_args()
@@ -41,6 +42,11 @@ class Quiz:
             for m in configuration.m:
                 module = __import__(m)
                 q.extend(module.get_questions())
+
+        if configuration.l:
+            for l in configuration.l:
+                l = ListParser(lines.lines(l), l)
+                q.extend(l.get_questions())
 
         if not len(q):
             raise Exception("No questions extracted, specify -f or -m")
@@ -128,6 +134,42 @@ class Quiz:
 
     def hash_for_question(self, q):
         return md5(("\n".join(q['q'])).encode()).hexdigest()
+
+class ListParser:
+    def __init__(self, lines, name):
+        self.dictify(lines, name)
+
+    def dictify(self, lines, name):
+        questions = []
+        line_number = 0
+        for line in lines:
+            line_number = line_number + 1
+            if len(line.strip()) == 0:
+                continue
+
+            if re.search(r'^%__ END __', line):
+                break
+
+            if re.search(r'^<!-- END -->', line):
+                break
+
+            if re.search(r'^----', line):
+                break
+
+            current_item = { 'q': [ line ] , 'a': [ 'ok' ], 'ln': line_number }
+
+            try:
+                current_item['n'] = name
+            except AttributeError:
+                print("Input doesn't have a name.")
+
+            questions.append(current_item)
+
+        self.questions = questions
+
+    def get_questions(self):
+        return self.questions
+
 
 class LungParser:
 
