@@ -2,8 +2,8 @@
 
 import os
 
-source = "~/.t/x.md"
-notes = 3
+source = "~/.t/a.md"
+notes = 20
 items = []
 
 with open(os.path.expanduser(source)) as f:
@@ -12,11 +12,8 @@ with open(os.path.expanduser(source)) as f:
 def get_questions():
     result = []
     for x in range(min(len(items), notes)):
-        result.append(
-          {
-            'q': [ items[x].strip() ]
-          , 'a': [ "ok" ]
-          }
-        )
+        q = [ items[x].strip() ]
+        q.extend([ "", "@@ context %s" % source + ":" + str(x) ])
+        result.append({ 'q': q , 'a': [ "ok" ] })
 
     return result
