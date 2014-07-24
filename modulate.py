@@ -6,10 +6,9 @@ import parse
 import random
 
 s = parse.Sections()
-notes = 5
+notes = 300
 
 instructions = []
-
 
 for f in glob.glob(os.path.expanduser("~/.modulations/*.txt")):
     with open(f) as i:
