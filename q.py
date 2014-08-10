@@ -182,7 +182,7 @@ class LungParser:
         current_item = None
         line_number = 0
         for line in lines:
-            line_number = line_number + 1
+            line_number +=  1
             if len(line.strip()) == 0:
                 continue
 
