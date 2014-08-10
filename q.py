@@ -157,7 +157,10 @@ class ListParser:
             if re.search(r'^----', line):
                 break
 
-            current_item = { 'q': [ line ] , 'a': [ 'ok' ], 'ln': line_number }
+            if re.search(r'^x ', line):
+                continue
+
+            current_item = { 'q': [ re.sub('^\d+\.\s+', '', line) ] , 'a': [ 'ok' ], 'ln': line_number }
 
             try:
                 current_item['n'] = name
