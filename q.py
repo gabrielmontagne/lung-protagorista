@@ -18,7 +18,6 @@ max_factor = 100
 factor_on_correct = 0.5
 factor_on_wrong = 1.7
 factor_on_wrong_with_hint = 1.4
-correct_without_hint = 3
 
 class Quiz:
     def __init__(self):
@@ -58,7 +57,7 @@ class Quiz:
         self.asker = ask.Asker()
         self.sequential_index = 0
         self.sequential_run = configuration.s
-        self.correct_without_hint = configuration.c
+        self.correct_in_row = configuration.c
 
     def ask(self):
 
@@ -86,7 +85,7 @@ class Quiz:
         else:
             weight *= factor_on_wrong
             streak = 0
-            while hint or streak < self.correct_without_hint:
+            while hint or streak < self.correct_in_row:
                 try:
                     hint = self.asker.ask(question, hint)
                 except ask.QuestionAbort:
