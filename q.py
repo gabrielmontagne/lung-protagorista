@@ -28,6 +28,7 @@ class Quiz:
         parser.add_argument('-f', nargs='+', required=False, help='files')
         parser.add_argument('-l', nargs='+', required=False, help='lists')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
+        parser.add_argument('-c', nargs='?', type=int, default=3, required=False, help='corret retries')
 
         configuration = parser.parse_args()
 
@@ -57,6 +58,7 @@ class Quiz:
         self.asker = ask.Asker()
         self.sequential_index = 0
         self.sequential_run = configuration.s
+        self.correct_without_hint = configuration.c
 
     def ask(self):
 
@@ -84,7 +86,7 @@ class Quiz:
         else:
             weight *= factor_on_wrong
             streak = 0
-            while hint or streak < correct_without_hint:
+            while hint or streak < self.correct_without_hint:
                 try:
                     hint = self.asker.ask(question, hint)
                 except ask.QuestionAbort:
