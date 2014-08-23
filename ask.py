@@ -9,7 +9,7 @@ import tempfile
 
 STOP = "@@ stop @@"
 SEPARATOR = "@@ ============"
-VIM_FT = "@@ vim:ft=diff"
+VIM_FT = "@@ vim:ft=diff:fo="
 
 class Asker:
     def __init__(self):
