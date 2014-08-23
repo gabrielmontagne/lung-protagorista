@@ -154,6 +154,9 @@ class ListParser:
             if re.search(r'^<!-- END -->', line):
                 break
 
+            if re.search(r'^<hr', line):
+                break
+
             if re.search(r'^----', line):
                 break
 
