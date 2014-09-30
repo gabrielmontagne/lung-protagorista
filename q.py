@@ -163,6 +163,9 @@ class ListParser:
             if re.search(r'^x ', line):
                 continue
 
+            if re.search(r'^#', line):
+                continue
+
             current_item = { 'q': [ re.sub('^\d+\.\s+', '', line) ] , 'a': [ 'ok' ], 'ln': line_number }
 
             try:
