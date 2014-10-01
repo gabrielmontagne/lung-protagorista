@@ -92,6 +92,7 @@ class Quiz:
                     return
                 except ask.AbortAndReload:
                     self.__init__()
+                    return
 
                 if hint:
                     weight *= factor_on_wrong_with_hint
