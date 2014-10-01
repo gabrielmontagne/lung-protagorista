@@ -22,13 +22,17 @@ factor_on_wrong_with_hint = 1.4
 class Quiz:
     def __init__(self):
 
+        self.current_q_index = None
+        self.create_questions()
+
+    def create_questions(self):
+
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
         parser.add_argument('-f', nargs='+', required=False, help='files')
         parser.add_argument('-l', nargs='+', required=False, help='lists')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
         parser.add_argument('-c', nargs='?', type=int, default=3, required=False, help='corret retries')
-
         configuration = parser.parse_args()
 
         q = []
@@ -49,7 +53,7 @@ class Quiz:
                 q.extend(l.get_questions())
 
         if not len(q):
-            raise Exception("No questions extracted, specify -f or -m")
+            raise Exception("No questions extracted, specify -f, -m or -l")
 
         self.questions = q
         self.weighted_random = weighted_random.WeightedRandom({})
@@ -61,7 +65,10 @@ class Quiz:
 
     def ask(self):
 
-        if self.sequential_run:
+        if self.current_q_index is not None:
+            question = self.questions[self.current_q_index]
+            question_id = self.hash_for_question(question)
+        elif self.sequential_run:
             question = self.questions[self.sequential_index % len(self.questions)]
             question_id = self.hash_for_question(question)
             self.sequential_index += 1
@@ -69,12 +76,15 @@ class Quiz:
             question_id = self.weighted_random.random()
             question = self.question_by_id[question_id]
 
+        self.current_q_index = None
+
         try:
             hint = self.asker.ask(question)
         except ask.QuestionAbort:
             return
         except ask.AbortAndReload:
-            self.__init__()
+            self.current_q_index = self.questions.index(question)
+            self.create_questions()
             return
 
         question_weights = shelve.open(weights_file)
@@ -91,13 +101,16 @@ class Quiz:
                 except ask.QuestionAbort:
                     return
                 except ask.AbortAndReload:
-                    self.__init__()
+                    self.current_q_index = self.questions.index(question)
+                    self.create_questions()
+                    return
 
                 if hint:
                     weight *= factor_on_wrong_with_hint
                     streak = 0
                 else:
                     streak += 1
+
 
         question_weights[question_id] = max(min(weight, max_factor), min_factor)
         question_weights.close()
