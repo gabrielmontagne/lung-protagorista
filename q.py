@@ -78,6 +78,8 @@ class Quiz:
 
         self.current_q_index = None
 
+        question['weight'] = self.weighted_random.get_weight(question_id)
+
         try:
             hint = self.asker.ask(question)
         except ask.QuestionAbort:
@@ -97,6 +99,7 @@ class Quiz:
             streak = 0
             while hint or streak < self.correct_in_row:
                 try:
+                    question['weight'] = weight
                     hint = self.asker.ask(question, hint)
                 except ask.QuestionAbort:
                     return

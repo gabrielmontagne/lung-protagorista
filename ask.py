@@ -22,6 +22,9 @@ class Asker:
         if "n" in question:
           question_lines.append("## %(n)s:%(ln)s" % question)
 
+        if 'weight' in question:
+          question_lines.append("@@ W:%(weight).3f" % question)
+
         question_lines.extend([SEPARATOR, ""])
         question_lines.extend(question['q'])
         question_lines.extend(["", SEPARATOR])
