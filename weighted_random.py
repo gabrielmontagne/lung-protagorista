@@ -10,6 +10,9 @@ class WeightedRandom:
         self.weights = weights
         self.recalculate_core_list()
 
+    def get_weight(self, key):
+        return self.weights[key] 
+
     def recalculate_core_list(self):
         total = 0
         core_list = []
