@@ -179,6 +179,9 @@ class ListParser:
             if re.search(r'^<!-- END -->', line):
                 break
 
+            if re.search(r'^<!-- SOURCE -->', line):
+                break
+
             if re.search(r'^<hr', line):
                 break
 
@@ -224,6 +227,9 @@ class LungParser:
                 break
 
             if re.search(r'^<!-- END -->', line):
+                break
+
+            if re.search(r'^<!-- SOURCE -->', line):
                 break
 
             if re.search(r'^----', line):
