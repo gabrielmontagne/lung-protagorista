@@ -3,6 +3,7 @@
 from hashlib import md5
 import argparse
 import ask
+import imp
 import lines
 import os
 import re
@@ -18,6 +19,7 @@ max_factor = 100
 factor_on_correct = 0.5
 factor_on_wrong = 1.7
 factor_on_wrong_with_hint = 1.4
+dynamic_module_count = 0
 
 class Quiz:
     def __init__(self):
@@ -26,6 +28,7 @@ class Quiz:
         self.create_questions()
 
     def create_questions(self):
+        global dynamic_module_count
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
@@ -44,7 +47,13 @@ class Quiz:
 
         if configuration.m:
             for m in configuration.m:
-                module = __import__(m)
+                if m.startswith(('.', '/')):
+                    module = imp.load_source(
+                        'dyn' + str(dynamic_module_count), m)
+                    dynamic_module_count += 1
+                else:
+                    module = __import__(m)
+
                 q.extend(module.get_questions())
 
         if configuration.l:
