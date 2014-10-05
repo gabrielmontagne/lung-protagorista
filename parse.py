@@ -84,13 +84,6 @@ def main():
         with open(filename) as f:
             s.addlines(f.name, f.readlines())
 
-#   for p in s.paragraphs:
-#       print("\n----- P\n", p.body())
-
-#   print(" ")
-#   print("Sections: ---------------")
-#   print(" ")
-
     for p in s.sections:
         print("\n----- S →", p.head)
         print(p.body())
