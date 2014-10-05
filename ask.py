@@ -4,7 +4,6 @@ import difflib
 import os
 import re
 import subprocess
-import sys
 import tempfile
 
 STOP = "@@ stop @@"
@@ -48,8 +47,7 @@ class Asker:
 
         if len(input_lines):
             if input_lines[0] == ':quit':
-                print("... bye")
-                sys.exit(0)
+                raise Quit('quitting')
             if input_lines[0] == ':skip':
                 raise QuestionAbort('aborting')
             if input_lines[0] == ':reload':
@@ -84,4 +82,7 @@ class QuestionAbort(Exception):
     pass
 
 class AbortAndReload(Exception):
+    pass
+
+class Quit(Exception):
     pass
