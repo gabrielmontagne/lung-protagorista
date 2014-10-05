@@ -26,7 +26,15 @@ class Asker:
           question_lines.append("@@ W:%(weight).3f" % question)
 
         question_lines.extend([SEPARATOR, ""])
-        question_lines.extend(question['q'])
+
+        execute_match = re.match('^ex:(.*)', question['q'][0])
+
+        if execute_match:
+            os.system(execute_match.groups()[0])
+            question_lines.extend(question['q'][1:])
+        else:
+            question_lines.extend(question['q'])
+
         question_lines.extend(["", SEPARATOR])
 
         if hint:
@@ -35,10 +43,6 @@ class Asker:
         question_lines.append(VIM_FT)
 
         prompt = "\n".join(question_lines)
-
-        execute_match = re.match('^ex:(.*)', question['q'][0])
-        if execute_match:
-            os.system(execute_match.groups()[0])
 
         input_lines = self.bleach_lines(self.input_editor(prompt).split("\n"))
 
