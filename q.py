@@ -90,7 +90,9 @@ class Quiz:
     def ask(self):
 
         if self.current_q_index is not None:
-            question = self.questions[self.current_q_index]
+            question = self.questions[
+              min(self.current_q_index, len(self.questions) -1 )
+            ]
             question_id = self.hash_for_question(question)
         elif self.sequential_run:
             question = self.questions[self.sequential_index % len(self.questions)]
