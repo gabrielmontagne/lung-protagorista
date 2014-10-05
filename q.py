@@ -29,6 +29,13 @@ break_prefixes = (
 
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
+def initial_factor_from(line):
+    weight = initial_factor_extract.match(line)
+    if not weight:
+        return None
+
+    return float(weight.groups()[0])
+
 class Quiz:
     def __init__(self):
 
@@ -131,7 +138,6 @@ class Quiz:
                 else:
                     streak += 1
 
-
         question_weights[question_id] = max(min(weight, max_factor), min_factor)
         question_weights.close()
         self.weight_questions()
@@ -183,10 +189,11 @@ class ListParser:
         line_number = 0
         for line in lines:
             line_number = line_number + 1
+            clean_line = re.sub('^\d+\.\s+', '', line)
 
             if len(line.strip()) == 0:
                 continue
-            
+
             if line.startswith(break_prefixes):
                 break
 
@@ -196,7 +203,11 @@ class ListParser:
             if re.search(r'^#', line):
                 continue
 
-            current_item = { 'q': [ re.sub('^\d+\.\s+', '', line) ] , 'a': [ 'ok' ], 'ln': line_number }
+            current_item = { 'q': [ clean_line ] , 'a': [ 'ok' ], 'ln': line_number }
+
+            weight_factor = initial_factor_from(clean_line)
+            if weight_factor is not None:
+                current_item['initial-factor'] = weight_factor
 
             try:
                 current_item['n'] = name
@@ -210,9 +221,7 @@ class ListParser:
     def get_questions(self):
         return self.questions
 
-
 class LungParser:
-
     def __init__(self, lines, name):
         self.dictify(lines, name)
 
@@ -241,11 +250,12 @@ class LungParser:
                     current_item = None;
 
                 if current_item == None:
-                    weight_factor = initial_factor_extract.match(line)
+
                     current_item = {'q': [line.strip()], 'a': [], 'ln': line_number}
 
-                    if weight_factor:
-                        current_item['initial-factor'] = float(weight_factor.groups()[0])
+                    weight_factor = initial_factor_from(line)
+                    if weight_factor is not None:
+                        current_item['initial-factor'] = weight_factor
 
                     try:
                         current_item['n'] = name
