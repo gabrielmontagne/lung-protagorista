@@ -20,6 +20,12 @@ factor_on_correct = 0.5
 factor_on_wrong = 1.7
 factor_on_wrong_with_hint = 1.4
 dynamic_module_count = 0
+break_prefixes = (
+  '%__ END __'
+, '<!-- END -->'
+, '<!-- SOURCE -->'
+, '----'
+)
 
 class Quiz:
     def __init__(self):
@@ -172,20 +178,8 @@ class ListParser:
             line_number = line_number + 1
             if len(line.strip()) == 0:
                 continue
-
-            if re.search(r'^%__ END __', line):
-                break
-
-            if re.search(r'^<!-- END -->', line):
-                break
-
-            if re.search(r'^<!-- SOURCE -->', line):
-                break
-
-            if re.search(r'^<hr', line):
-                break
-
-            if re.search(r'^----', line):
+            
+            if line.startswith(break_prefixes):
                 break
 
             if re.search(r'^x ', line):
@@ -223,16 +217,7 @@ class LungParser:
             if len(line.strip()) == 0:
                 continue
 
-            if re.search(r'^%__ END __', line):
-                break
-
-            if re.search(r'^<!-- END -->', line):
-                break
-
-            if re.search(r'^<!-- SOURCE -->', line):
-                break
-
-            if re.search(r'^----', line):
+            if line.startswith(break_prefixes):
                 break
 
             if re.search(r'^%', line):
