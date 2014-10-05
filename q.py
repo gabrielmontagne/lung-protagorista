@@ -257,10 +257,9 @@ class LungParser:
                     if weight_factor is not None:
                         current_item['initial-factor'] = weight_factor
 
-                    try:
+                    if name is not None:
                         current_item['n'] = name
-
-                    except AttributeError:
+                    else:
                         print("Input doesn't have a name.")
                 else:
                     current_item['q'].append(line.strip())
