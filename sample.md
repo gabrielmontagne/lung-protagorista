@@ -5,11 +5,11 @@ color de fondo
 
 1
 
-    1
+    1 #% cosas que salen de acá a allá.
 
-2
+^[F:0.3] 2
 
-    2
+    2 //% otro comentario
 
 3
 
