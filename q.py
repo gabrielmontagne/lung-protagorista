@@ -8,6 +8,7 @@ import lines
 import os
 import re
 import shelve
+import sys
 import time
 import weighted_random
 
@@ -105,17 +106,26 @@ class Quiz:
         self.current_q_index = None
 
         question['weight'] = self.weighted_random.get_weight(question_id)
+        question_weights = shelve.open(weights_file)
 
         try:
             hint = self.asker.ask(question)
+
         except ask.QuestionAbort:
             return
         except ask.AbortAndReload:
             self.current_q_index = self.questions.index(question)
             self.create_questions()
             return
+        except ask.Quit:
+            print("... bye ciao")
+            # question_weights[question_id] = max(min(weight, max_factor), min_factor)
+            time.sleep(2)
+            print('-ok-')
+            time.sleep(2)
+            # question_weights.close()
+            sys.exit(0)
 
-        question_weights = shelve.open(weights_file)
         weight = question_weights[question_id]
 
         if not hint:
@@ -128,11 +138,22 @@ class Quiz:
                     question['weight'] = weight
                     hint = self.asker.ask(question, hint)
                 except ask.QuestionAbort:
+                    question_weights[question_id] = weight
                     return
                 except ask.AbortAndReload:
                     self.current_q_index = self.questions.index(question)
                     self.create_questions()
+                    question_weights[question_id] = weight
                     return
+                except ask.Quit:
+                    print("... olr pvnb")
+                    # question_weights[question_id] = max(min(weight, max_factor), min_factor)
+                    time.sleep(2)
+                    print('-bx-')
+                    time.sleep(2)
+                    # question_weights.close()
+                    question_weights[question_id] = weight
+                    sys.exit(0)
 
                 if hint:
                     weight *= factor_on_wrong_with_hint
