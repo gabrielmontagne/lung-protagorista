@@ -104,64 +104,50 @@ class Quiz:
             question = self.question_by_id[question_id]
 
         self.current_q_index = None
-
-        question['weight'] = self.weighted_random.get_weight(question_id)
         question_weights = shelve.open(weights_file)
 
-        try:
-            hint = self.asker.ask(question)
-
-        except ask.QuestionAbort:
-            return
-        except ask.AbortAndReload:
-            self.current_q_index = self.questions.index(question)
-            self.create_questions()
-            return
-        except ask.Quit:
-            print("... bye ciao")
-            # question_weights[question_id] = max(min(weight, max_factor), min_factor)
-            time.sleep(2)
-            print('-ok-')
-            time.sleep(2)
-            # question_weights.close()
-            sys.exit(0)
-
         weight = question_weights[question_id]
+        streak = 0
+        previous_hint = None
+        hint = ''
 
-        if not hint:
-            weight *= factor_on_correct
-        else:
-            weight *= factor_on_wrong
-            streak = 0
-            while hint or streak < self.correct_in_row:
-                try:
-                    question['weight'] = weight
-                    hint = self.asker.ask(question, hint)
-                except ask.QuestionAbort:
-                    question_weights[question_id] = weight
-                    return
-                except ask.AbortAndReload:
-                    self.current_q_index = self.questions.index(question)
-                    self.create_questions()
-                    question_weights[question_id] = weight
-                    return
-                except ask.Quit:
-                    print("... olr pvnb")
-                    # question_weights[question_id] = max(min(weight, max_factor), min_factor)
-                    time.sleep(2)
-                    print('-bx-')
-                    time.sleep(2)
-                    # question_weights.close()
-                    question_weights[question_id] = weight
-                    sys.exit(0)
+        def record_weight():
+            question_weights[question_id] = max(
+                    min(weight, max_factor), min_factor)
+
+        while True:
+            try:
+                question['weight'] = weight
+                hint = self.asker.ask(question, hint)
 
                 if hint:
-                    weight *= factor_on_wrong_with_hint
-                    streak = 0
-                else:
-                    streak += 1
+                    if previous_hint: weight *= factor_on_wrong_with_hint
+                    else: weight *= factor_on_wrong
 
-        question_weights[question_id] = max(min(weight, max_factor), min_factor)
+                    streak = 0
+                    previous_hint = hint
+                    record_weight()
+                    continue
+
+                if not previous_hint:
+                    weight *= factor_on_correct
+                    record_weight()
+                    break
+
+                streak += 1
+                if streak > self.correct_in_row: break
+
+            except ask.QuestionAbort:
+                return
+
+            except ask.AbortAndReload:
+                self.create_questions()
+                return
+
+            except ask.Quit:
+                print('...ciao')
+                sys.exit(0)
+
         question_weights.close()
         self.weight_questions()
 
