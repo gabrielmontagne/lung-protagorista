@@ -4,12 +4,11 @@ import difflib
 import os
 import re
 import subprocess
-import sys
 import tempfile
 
 STOP = "@@ stop @@"
 SEPARATOR = "@@ ============"
-VIM_FT = "@@ vim:ft=diff"
+VIM_FT = "@@ vim:ft=diff:fo="
 
 class Asker:
     def __init__(self):
@@ -22,8 +21,19 @@ class Asker:
         if "n" in question:
           question_lines.append("## %(n)s:%(ln)s" % question)
 
+        if 'weight' in question:
+          question_lines.append("@@ W:%(weight).3f" % question)
+
         question_lines.extend([SEPARATOR, ""])
-        question_lines.extend(question['q'])
+
+        execute_match = re.match('^ex:(.*)', question['q'][0])
+
+        if execute_match:
+            os.system(execute_match.groups()[0])
+            question_lines.extend(question['q'][1:])
+        else:
+            question_lines.extend(question['q'])
+
         question_lines.extend(["", SEPARATOR])
 
         if hint:
@@ -33,16 +43,11 @@ class Asker:
 
         prompt = "\n".join(question_lines)
 
-        execute_match = re.match('^ex:(.*)', question['q'][0])
-        if execute_match:
-            os.system(execute_match.groups()[0])
-
         input_lines = self.bleach_lines(self.input_editor(prompt).split("\n"))
 
         if len(input_lines):
             if input_lines[0] == ':quit':
-                print("... bye")
-                sys.exit(0)
+                raise Quit('quitting')
             if input_lines[0] == ':skip':
                 raise QuestionAbort('aborting')
             if input_lines[0] == ':reload':
@@ -77,4 +82,7 @@ class QuestionAbort(Exception):
     pass
 
 class AbortAndReload(Exception):
+    pass
+
+class Quit(Exception):
     pass

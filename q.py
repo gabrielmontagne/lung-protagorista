@@ -3,10 +3,12 @@
 from hashlib import md5
 import argparse
 import ask
+import imp
 import lines
 import os
 import re
 import shelve
+import sys
 import time
 import weighted_random
 
@@ -18,16 +20,38 @@ max_factor = 100
 factor_on_correct = 0.5
 factor_on_wrong = 1.7
 factor_on_wrong_with_hint = 1.4
-correct_without_hint = 3
+dynamic_module_count = 0
+break_prefixes = (
+  '%__ END __'
+, '<!-- END -->'
+, '<!-- SOURCE -->'
+, '----'
+)
+
+initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
+
+def initial_factor_from(line):
+    weight = initial_factor_extract.match(line)
+    if not weight:
+        return None
+
+    return float(weight.groups()[0])
 
 class Quiz:
     def __init__(self):
 
+        self.current_q_index = None
+        self.create_questions()
+
+    def create_questions(self):
+        global dynamic_module_count
+
         parser = argparse.ArgumentParser()
         parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
         parser.add_argument('-f', nargs='+', required=False, help='files')
+        parser.add_argument('-l', nargs='+', required=False, help='lists')
         parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
-
+        parser.add_argument('-c', nargs='?', type=int, default=3, required=False, help='corret retries')
         configuration = parser.parse_args()
 
         q = []
@@ -39,11 +63,22 @@ class Quiz:
 
         if configuration.m:
             for m in configuration.m:
-                module = __import__(m)
+                if m.startswith(('.', '/')):
+                    module = imp.load_source(
+                        'dyn' + str(dynamic_module_count), m)
+                    dynamic_module_count += 1
+                else:
+                    module = __import__(m)
+
                 q.extend(module.get_questions())
 
+        if configuration.l:
+            for l in configuration.l:
+                l = ListParser(lines.lines(l), l)
+                q.extend(l.get_questions())
+
         if not len(q):
-            raise Exception("No questions extracted, specify -f or -m")
+            raise Exception("No questions extracted, specify -f, -m or -l")
 
         self.questions = q
         self.weighted_random = weighted_random.WeightedRandom({})
@@ -51,10 +86,16 @@ class Quiz:
         self.asker = ask.Asker()
         self.sequential_index = 0
         self.sequential_run = configuration.s
+        self.correct_in_row = configuration.c
 
     def ask(self):
 
-        if self.sequential_run:
+        if self.current_q_index is not None:
+            question = self.questions[
+              min(self.current_q_index, len(self.questions) -1 )
+            ]
+            question_id = self.hash_for_question(question)
+        elif self.sequential_run:
             question = self.questions[self.sequential_index % len(self.questions)]
             question_id = self.hash_for_question(question)
             self.sequential_index += 1
@@ -62,37 +103,51 @@ class Quiz:
             question_id = self.weighted_random.random()
             question = self.question_by_id[question_id]
 
-        try:
-            hint = self.asker.ask(question)
-        except ask.QuestionAbort:
-            return
-        except ask.AbortAndReload:
-            self.__init__()
-            return
-
+        self.current_q_index = None
         question_weights = shelve.open(weights_file)
-        weight = question_weights[question_id]
 
-        if not hint:
-            weight *= factor_on_correct
-        else:
-            weight *= factor_on_wrong
-            streak = 0
-            while hint or streak < correct_without_hint:
-                try:
-                    hint = self.asker.ask(question, hint)
-                except ask.QuestionAbort:
-                    return
-                except ask.AbortAndReload:
-                    self.__init__()
+        weight = question_weights[question_id]
+        streak = 0
+        previous_hint = None
+        hint = ''
+
+        def record_weight():
+            question_weights[question_id] = max(
+                    min(weight, max_factor), min_factor)
+
+        while True:
+            try:
+                question['weight'] = weight
+                hint = self.asker.ask(question, hint)
 
                 if hint:
-                    weight *= factor_on_wrong_with_hint
-                    streak = 0
-                else:
-                    streak += 1
+                    if previous_hint: weight *= factor_on_wrong_with_hint
+                    else: weight *= factor_on_wrong
 
-        question_weights[question_id] = max(min(weight, max_factor), min_factor)
+                    streak = 0
+                    previous_hint = hint
+                    record_weight()
+                    continue
+
+                if not previous_hint:
+                    weight *= factor_on_correct
+                    record_weight()
+                    break
+
+                streak += 1
+                if streak > self.correct_in_row: break
+
+            except ask.QuestionAbort:
+                return
+
+            except ask.AbortAndReload:
+                self.create_questions()
+                return
+
+            except ask.Quit:
+                print('...ciao')
+                sys.exit(0)
+
         question_weights.close()
         self.weight_questions()
 
@@ -113,7 +168,12 @@ class Quiz:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
                 log.write("initialize factor for q: " + question_id + "\n")
-                question_weights[question_id] = 1
+
+                if 'initial-factor' in q:
+                    question_weights[question_id] = q['initial-factor']
+                else:
+                    question_weights[question_id] = 1
+
             else:
                 log.write(question_id + ", factor: " + str(question_weights[question_id]) + "\n")
 
@@ -129,8 +189,48 @@ class Quiz:
     def hash_for_question(self, q):
         return md5(("\n".join(q['q'])).encode()).hexdigest()
 
-class LungParser:
+class ListParser:
+    def __init__(self, lines, name):
+        self.dictify(lines, name)
 
+    def dictify(self, lines, name):
+        questions = []
+        line_number = 0
+        for line in lines:
+            line_number = line_number + 1
+            clean_line = re.sub('^\d+\.\s+', '', line)
+
+            if len(line.strip()) == 0:
+                continue
+
+            if line.startswith(break_prefixes):
+                break
+
+            if re.search(r'^x ', line):
+                continue
+
+            if re.search(r'^#', line):
+                continue
+
+            current_item = { 'q': [ clean_line ] , 'a': [ 'ok' ], 'ln': line_number }
+
+            weight_factor = initial_factor_from(clean_line)
+            if weight_factor is not None:
+                current_item['initial-factor'] = weight_factor
+
+            try:
+                current_item['n'] = name
+            except AttributeError:
+                print("Input doesn't have a name.")
+
+            questions.append(current_item)
+
+        self.questions = questions
+
+    def get_questions(self):
+        return self.questions
+
+class LungParser:
     def __init__(self, lines, name):
         self.dictify(lines, name)
 
@@ -139,17 +239,11 @@ class LungParser:
         current_item = None
         line_number = 0
         for line in lines:
-            line_number = line_number + 1
+            line_number +=  1
             if len(line.strip()) == 0:
                 continue
 
-            if re.search(r'^%__ END __', line):
-                break
-
-            if re.search(r'^<!-- END -->', line):
-                break
-
-            if re.search(r'^----', line):
+            if line.startswith(break_prefixes):
                 break
 
             if re.search(r'^%', line):
@@ -165,10 +259,16 @@ class LungParser:
                     current_item = None;
 
                 if current_item == None:
+
                     current_item = {'q': [line.strip()], 'a': [], 'ln': line_number}
-                    try:
+
+                    weight_factor = initial_factor_from(line)
+                    if weight_factor is not None:
+                        current_item['initial-factor'] = weight_factor
+
+                    if name is not None:
                         current_item['n'] = name
-                    except AttributeError:
+                    else:
                         print("Input doesn't have a name.")
                 else:
                     current_item['q'].append(line.strip())
