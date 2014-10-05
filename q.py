@@ -27,6 +27,8 @@ break_prefixes = (
 , '----'
 )
 
+initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
+
 class Quiz:
     def __init__(self):
 
@@ -151,7 +153,12 @@ class Quiz:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
                 log.write("initialize factor for q: " + question_id + "\n")
-                question_weights[question_id] = 1
+
+                if 'initial-factor' in q:
+                    question_weights[question_id] = q['initial-factor']
+                else:
+                    question_weights[question_id] = 1
+
             else:
                 log.write(question_id + ", factor: " + str(question_weights[question_id]) + "\n")
 
@@ -176,6 +183,7 @@ class ListParser:
         line_number = 0
         for line in lines:
             line_number = line_number + 1
+
             if len(line.strip()) == 0:
                 continue
             
@@ -233,9 +241,15 @@ class LungParser:
                     current_item = None;
 
                 if current_item == None:
+                    weight_factor = initial_factor_extract.match(line)
                     current_item = {'q': [line.strip()], 'a': [], 'ln': line_number}
+
+                    if weight_factor:
+                        current_item['initial-factor'] = float(weight_factor.groups()[0])
+
                     try:
                         current_item['n'] = name
+
                     except AttributeError:
                         print("Input doesn't have a name.")
                 else:

@@ -7,7 +7,10 @@ color de fondo
 
     1 #% cosas que salen de acá a allá.
 
-^[F:0.3] 2
+2?
+    2 ?
+
+^[W:0.1] Bajar el factor bastante (de dos).
 
     2 //% otro comentario
 
