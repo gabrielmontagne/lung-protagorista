@@ -135,6 +135,7 @@ class Quiz:
                 return
 
             except ask.AbortAndReload:
+                self.current_q_index = self.questions.index(question)
                 self.create_questions()
                 return
 
