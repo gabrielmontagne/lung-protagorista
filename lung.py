@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 
-import q
+import argparse
 import os
-import weighted_random
+import q
 import time
+import weighted_random
 
 
 def main():
-    quiz = q.Quiz()
-    for x in range(200):
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
+    parser.add_argument('-f', nargs='+', required=False, help='files')
+    parser.add_argument('-l', nargs='+', required=False, help='lists')
+    parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
+    parser.add_argument('-c', nargs='?', type=int, default=3, required=False, help='corret retries')
+    parser.add_argument('-qs', nargs='?', type=int, default=50, required=False, help='cuestion count')
+    configuration = parser.parse_args()
+
+    quiz = q.Quiz(configuration)
+    for x in range(configuration.qs):
         quiz.ask()
+
+    print('...done')
 
 if __name__ == "__main__": 
     main()

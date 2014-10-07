@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from hashlib import md5
-import argparse
 import ask
 import imp
 import lines
@@ -38,21 +37,16 @@ def initial_factor_from(line):
     return float(weight.groups()[0])
 
 class Quiz:
-    def __init__(self):
+    def __init__(self, configuration):
 
+        self.configuration = configuration
         self.current_q_index = None
         self.create_questions()
 
     def create_questions(self):
         global dynamic_module_count
 
-        parser = argparse.ArgumentParser()
-        parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
-        parser.add_argument('-f', nargs='+', required=False, help='files')
-        parser.add_argument('-l', nargs='+', required=False, help='lists')
-        parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
-        parser.add_argument('-c', nargs='?', type=int, default=3, required=False, help='corret retries')
-        configuration = parser.parse_args()
+        configuration = self.configuration
 
         q = []
 
