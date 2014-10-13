@@ -64,8 +64,7 @@ class Asker:
         if STOP in lines:
             lines = lines[:lines.index(STOP)]
 
-        return  [line.rstrip() for line in lines if re.search('\S', line) and
-            re.search('^[^%]', line)]
+        return  [line.rstrip() for line in lines if re.search('\S', line)]
 
     def input_editor(self, prompt=' '):
         f = tempfile.NamedTemporaryFile(delete=False)
