@@ -85,10 +85,10 @@ class Quiz:
     def ask(self):
 
         if self.current_q_index is not None:
-            question = self.questions[
-              min(self.current_q_index, len(self.questions) -1 )
-            ]
+            index = min(self.current_q_index, len(self.questions) -1 )
+            question = self.questions[ index ]
             question_id = self.hash_for_question(question)
+            self.sequential_index = index + 1
         elif self.sequential_run:
             question = self.questions[self.sequential_index % len(self.questions)]
             question_id = self.hash_for_question(question)
@@ -135,6 +135,7 @@ class Quiz:
                 return
 
             except ask.AbortAndReload:
+                question_weights.close()
                 self.current_q_index = self.questions.index(question)
                 self.create_questions()
                 return
