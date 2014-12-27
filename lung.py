@@ -11,6 +11,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", action='store_true', help='sequential (non random)', required=False )
+    parser.add_argument("-lw", action='store_true', help="lock weight", required=False )
     parser.add_argument('-f', nargs='+', required=False, help='files')
     parser.add_argument('-l', nargs='+', required=False, help='lists')
     parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')

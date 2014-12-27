@@ -81,6 +81,7 @@ class Quiz:
         self.sequential_index = 0
         self.sequential_run = configuration.s
         self.correct_in_row = configuration.c
+        self.lock_weights = configuration.lw
 
     def ask(self):
 
@@ -115,8 +116,9 @@ class Quiz:
                 hint = self.asker.ask(question, hint)
 
                 if hint:
-                    if previous_hint: weight *= factor_on_wrong_with_hint
-                    else: weight *= factor_on_wrong
+                    if not self.lock_weights:
+                            if previous_hint: weight *= factor_on_wrong_with_hint
+                            else: weight *= factor_on_wrong
 
                     streak = 0
                     previous_hint = hint
@@ -124,7 +126,9 @@ class Quiz:
                     continue
 
                 if not previous_hint:
-                    weight *= factor_on_correct
+                    if not self.lock_weights:
+                            weight *= factor_on_correct
+
                     record_weight()
                     break
 
