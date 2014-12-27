@@ -51,8 +51,8 @@ class Quiz:
         def grep(e):
             if not configuration.g: return True
             return any(
-                pattern in line 
-                for pattern in configuration.g 
+                pattern in line
+                for pattern in configuration.g
                 for line in e['q']
             )
 
