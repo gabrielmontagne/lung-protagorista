@@ -48,12 +48,20 @@ class Quiz:
 
         configuration = self.configuration
 
+        def grep(e):
+            if not configuration.g: return True
+            return any(
+                pattern in line 
+                for pattern in configuration.g 
+                for line in e['q']
+            )
+
         q = []
 
         if configuration.f:
             for f in configuration.f:
                 p = LungParser(lines.lines(f), f)
-                q.extend(p.get_questions())
+                q.extend(filter(grep, p.get_questions()))
 
         if configuration.m:
             for m in configuration.m:
@@ -64,12 +72,12 @@ class Quiz:
                 else:
                     module = __import__(m)
 
-                q.extend(module.get_questions())
+                q.extend(filter(grep, module.get_questions()))
 
         if configuration.l:
             for l in configuration.l:
                 l = ListParser(lines.lines(l), l)
-                q.extend(l.get_questions())
+                q.extend(filter(grep, l.get_questions()))
 
         if not len(q):
             raise Exception("No questions extracted, specify -f, -m or -l")
