@@ -17,7 +17,7 @@ def main():
     parser.add_argument('-m', nargs='+', type=str, required=False, help='modules')
     parser.add_argument('-c', nargs='?', type=int, default=3, required=False, help='correct retries')
     parser.add_argument('-qs', nargs='?', type=int, default=50, required=False, help='cuestion count')
-    parser.add_argument('-g', nargs='+', required=False, help='grep')
+    parser.add_argument('-g', nargs='+', required=False, help='question grep')
     parser.add_argument("-lw", action='store_true', help="lock weight", required=False )
 
     configuration = parser.parse_args()
