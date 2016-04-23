@@ -1,12 +1,24 @@
 lung protagorista
 ====================
+:version:0.2.0
+:author:Gabriel Montagné Láscaris-Comneno gabriel@tibas.london
 
+very bespoke drill tool.
 el motor de toda esta picha.
 
+install
+------------
 
+to install::
 
-las opciones
--------------
+    python3 setup.py install
+
+usage
+-----------
+
+to use::
+
+    lung --help
 
 dice::
 
