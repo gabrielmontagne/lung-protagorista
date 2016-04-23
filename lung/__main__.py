@@ -1,7 +1,7 @@
 """CLI for lung drill runner"""
 
 import argparse
-import q
+from .q import Quiz
 
 def main():
 
@@ -17,7 +17,7 @@ def main():
 
     configuration = parser.parse_args()
 
-    quiz = q.Quiz(configuration)
+    quiz = Quiz(configuration)
     for x in range(configuration.qs):
         quiz.ask()
 

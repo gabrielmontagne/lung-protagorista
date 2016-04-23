@@ -1,5 +1,5 @@
 
-from .ask import Asker
+from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .lines import lines
 from .weightedrandom import WeightedRandom 
 from hashlib import md5
@@ -142,16 +142,16 @@ class Quiz:
                 streak += 1
                 if streak > self.correct_in_row: break
 
-            except ask.QuestionAbort:
+            except QuestionAbort:
                 return
 
-            except ask.AbortAndReload:
+            except AbortAndReload:
                 question_weights.close()
                 self.current_q_index = self.questions.index(question)
                 self.create_questions()
                 return
 
-            except ask.Quit:
+            except Quit:
                 print('...ciao')
                 sys.exit(0)
 
