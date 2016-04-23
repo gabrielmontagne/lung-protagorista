@@ -1,12 +1,7 @@
-#!/usr/bin/env python3
+"""CLI for lung drill runner"""
 
 import argparse
-import os
 import q
-import time
-import weighted_random
-import sys
-
 
 def main():
 
