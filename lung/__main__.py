@@ -1,12 +1,7 @@
-#!/usr/bin/env python3
+"""CLI for lung drill runner"""
 
 import argparse
-import os
-import q
-import time
-import weighted_random
-import sys
-
+from .q import Quiz
 
 def main():
 
@@ -22,7 +17,7 @@ def main():
 
     configuration = parser.parse_args()
 
-    quiz = q.Quiz(configuration)
+    quiz = Quiz(configuration)
     for x in range(configuration.qs):
         quiz.ask()
 

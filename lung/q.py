@@ -1,15 +1,14 @@
-#!/usr/bin/env python3
 
+from .ask import Asker, QuestionAbort, AbortAndReload, Quit
+from .lines import lines
+from .weightedrandom import WeightedRandom 
 from hashlib import md5
-import ask
 import imp
-import lines
 import os
 import re
 import shelve
 import sys
 import time
-import weighted_random
 
 config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights")
@@ -60,7 +59,7 @@ class Quiz:
 
         if configuration.f:
             for f in configuration.f:
-                p = LungParser(lines.lines(f), f)
+                p = LungParser(lines(f), f)
                 q.extend(filter(grep, p.get_questions()))
 
         if configuration.m:
@@ -76,16 +75,16 @@ class Quiz:
 
         if configuration.l:
             for l in configuration.l:
-                l = ListParser(lines.lines(l), l)
+                l = ListParser(lines(l), l)
                 q.extend(filter(grep, l.get_questions()))
 
         if not len(q):
             raise Exception("No questions extracted, specify -f, -m or -l")
 
         self.questions = q
-        self.weighted_random = weighted_random.WeightedRandom({})
+        self.weightedrandom = WeightedRandom({})
         self.weight_questions()
-        self.asker = ask.Asker()
+        self.asker = Asker()
         self.sequential_index = 0
         self.sequential_run = configuration.s
         self.correct_in_row = configuration.c
@@ -103,7 +102,7 @@ class Quiz:
             question_id = self.hash_for_question(question)
             self.sequential_index += 1
         else:
-            question_id = self.weighted_random.random()
+            question_id = self.weightedrandom.random()
             question = self.question_by_id[question_id]
 
         self.current_q_index = None
@@ -143,16 +142,16 @@ class Quiz:
                 streak += 1
                 if streak > self.correct_in_row: break
 
-            except ask.QuestionAbort:
+            except QuestionAbort:
                 return
 
-            except ask.AbortAndReload:
+            except AbortAndReload:
                 question_weights.close()
                 self.current_q_index = self.questions.index(question)
                 self.create_questions()
                 return
 
-            except ask.Quit:
+            except Quit:
                 print('...ciao')
                 sys.exit(0)
 
@@ -191,7 +190,7 @@ class Quiz:
         log.close()
 
         self.question_by_id = question_by_id
-        self.weighted_random.set_weights(questions_for_random)
+        self.weightedrandom.set_weights(questions_for_random)
         question_weights.close()
 
     def hash_for_question(self, q):
