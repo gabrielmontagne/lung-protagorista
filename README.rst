@@ -14,4 +14,4 @@ to install::
 
 to use::
 
-    python3 -m lung --help
+    lung --help
