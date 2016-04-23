@@ -1,6 +1,6 @@
 lung
 =======================================
-:version:0.1.0
+:version:0.2.0
 :author:Gabriel Montagné Láscaris-Comneno gabriel@tibas.london
 
 very bespoke drill tool.
