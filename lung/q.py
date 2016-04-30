@@ -36,6 +36,9 @@ def initial_factor_from(line):
     return float(weight.groups()[0])
 
 class Quiz:
+
+    asker = Asker()
+
     def __init__(self, configuration):
 
         self.configuration = configuration
@@ -84,7 +87,6 @@ class Quiz:
         self.questions = q
         self.weightedrandom = WeightedRandom({})
         self.weight_questions()
-        self.asker = Asker()
         self.sequential_index = 0
         self.sequential_run = configuration.s
         self.correct_in_row = configuration.c
@@ -195,6 +197,12 @@ class Quiz:
 
     def hash_for_question(self, q):
         return md5(("\n".join(q['q'])).encode()).hexdigest()
+
+
+class CMDQuiz(Quiz):
+    def __init__(self, configuration):
+        print('un CMD Quizzu', configuration)
+        super().__init__(configuration)
 
 class ListParser:
     def __init__(self, lines, name):

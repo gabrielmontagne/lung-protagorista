@@ -1,7 +1,8 @@
 """CLI for lung drill runner"""
 
+from .q import Quiz, CMDQuiz
 import argparse
-from .q import Quiz
+import sys
 
 def main():
 
@@ -15,9 +16,16 @@ def main():
     parser.add_argument('-g', nargs='+', required=False, help='question grep')
     parser.add_argument("-lw", action='store_true', help="lock weight", required=False )
 
+    parser.add_argument('-cmd', action='store_true', help='interactive CMD' )
+
     configuration = parser.parse_args()
 
-    quiz = Quiz(configuration)
+
+    if not configuration.cmd:
+        quiz = Quiz(configuration)
+    else:
+        quiz = CMDQuiz(configuration)
+
     for x in range(configuration.qs):
         quiz.ask()
 
