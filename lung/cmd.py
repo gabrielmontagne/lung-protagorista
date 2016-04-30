@@ -6,16 +6,43 @@ import re
 
 print('ok')
 
+class LungCMD(cmd.Cmd):
+
+    prompt = 'lung> '
+
+    def __init__(self, single_answer=False, intro=None):
+        self.single_answer = single_answer
+        self.result = []
+        super().__init__(intro)
+
+    def do___quit(self, *args):
+        print('the QUIT', args)
+
+    def do_EOF(self, *args):
+        return True
+
+    def default(self, line):
+        self.result.append(line)
+        return self.single_answer
+
+    def precmd(self, line):
+        return line.replace(':', '__')
+
 class CMDAsker(Asker):
     def ask(self, question, hint=''):
 
-        print('ask question', question, hint)
+        if hint:
+            print('>' * 10)
+            print(hint)
+            print('<' * 10)
 
-        r = input('tons> ')
+        command = LungCMD(len(question['a']) == 1)
+        command.cmdloop('\n'.join(question['q']))
 
         answer_lines = self.bleach_lines(question['a'])
-        input_lines = self.bleach_lines([ r ])
+        input_lines = self.bleach_lines(command.result)
 
+        print('input', input_lines)
 
         if input_lines == answer_lines:
             return ''
@@ -25,26 +52,3 @@ class CMDAsker(Asker):
 class CMDQuiz(Quiz):
 
     asker = CMDAsker()
-
-    def __init__(self, configuration):
-        print('un CMD Quizzu', configuration)
-        super().__init__(configuration)
-
-class LungCMD(cmd.Cmd):
-
-    prompt = 'oksカか> '
-
-    def do_read(self, *args):
-        print('Read!', args)
-
-    def do___read(self, *args):
-        print('the other read', args)
-
-    def do_EOF(self, *args):
-        print(chr(27) + '[2J')
-
-    def default(self, line):
-        print('default', line)
-
-    def precmd(self, line):
-        return line.replace(':', '_')
