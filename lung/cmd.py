@@ -4,7 +4,6 @@ import cmd
 import os
 import re
 
-print('ok')
 
 class LungCMD(cmd.Cmd):
     """CLI for lung"""
@@ -22,7 +21,7 @@ class LungCMD(cmd.Cmd):
     def do___skip(self, *args):
         raise QuestionAbort
 
-    def do___reload(self, *args)
+    def do___reload(self, *args):
         raise AbortAndReload
 
     def do_EOF(self, *args):
@@ -38,7 +37,9 @@ class LungCMD(cmd.Cmd):
     def precmd(self, line):
         return line.replace(':', '__')
 
+
 class CMDAsker(Asker):
+
     def ask(self, question, hint=''):
 
         os.system('clear')
@@ -49,17 +50,17 @@ class CMDAsker(Asker):
             print('<' * 10)
 
         command = LungCMD(len(question['a']) == 1)
-        command.cmdloop('\n'.join(question['q']))
+        command.cmdloop(
+            '\n'.join(self.preprocess_question_lines(question['q'])))
 
         answer_lines = self.bleach_lines(question['a'])
         input_lines = self.bleach_lines(command.result)
-
-        print('input', input_lines)
 
         if input_lines == answer_lines:
             return ''
 
         return '\n'.join(self.differ.compare(input_lines, answer_lines))
+
 
 class CMDQuiz(Quiz):
 
