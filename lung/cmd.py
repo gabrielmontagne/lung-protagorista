@@ -7,6 +7,7 @@ import re
 print('ok')
 
 class LungCMD(cmd.Cmd):
+    """CLI for lung"""
 
     prompt = 'lung> '
 
@@ -16,7 +17,13 @@ class LungCMD(cmd.Cmd):
         super().__init__(intro)
 
     def do___quit(self, *args):
-        print('the QUIT', args)
+        raise Quit
+
+    def do___skip(self, *args):
+        raise QuestionAbort
+
+    def do___reload(self, *args)
+        raise AbortAndReload
 
     def do_EOF(self, *args):
         return True
