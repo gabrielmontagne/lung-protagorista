@@ -9,6 +9,7 @@ color de fondo
 
 2?
     2 ?
+    o qué más?
 
 ^[W:0.1] Bajar el factor bastante (de dos).
 
