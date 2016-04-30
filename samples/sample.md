@@ -1,4 +1,4 @@
-ex: feh sample.jpg &
+ex: feh samples/sample.jpg &
 color de fondo
 
   rosa
