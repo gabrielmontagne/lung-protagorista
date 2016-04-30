@@ -26,7 +26,7 @@ class Asker:
 
         question_lines.extend([SEPARATOR, ''])
 
-        processed_lines = preprocess_question_lines()
+        processed_lines = self.preprocess_question_lines(question['q'])
 
         question_lines.extend(processed_lines)
         question_lines.extend(['', SEPARATOR])
