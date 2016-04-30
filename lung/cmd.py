@@ -31,6 +31,8 @@ class LungCMD(cmd.Cmd):
 class CMDAsker(Asker):
     def ask(self, question, hint=''):
 
+        os.system('clear')
+
         if hint:
             print('>' * 10)
             print(hint)
