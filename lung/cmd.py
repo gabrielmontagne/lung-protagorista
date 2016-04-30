@@ -1,4 +1,4 @@
-from .ask import Asker
+from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .q import Quiz
 import cmd
 import os
@@ -24,6 +24,9 @@ class LungCMD(cmd.Cmd):
     def default(self, line):
         self.result.append(line)
         return self.single_answer
+
+    def emptyline(self):
+        return True
 
     def precmd(self, line):
         return line.replace(':', '__')
