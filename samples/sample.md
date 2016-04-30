@@ -1,4 +1,4 @@
-ex: feh sample.jpg &
+ex: feh samples/sample.jpg &
 color de fondo
 
   rosa
@@ -9,6 +9,7 @@ color de fondo
 
 2?
     2 ?
+    o qué más?
 
 ^[W:0.1] Bajar el factor bastante (de dos).
 

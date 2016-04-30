@@ -8,15 +8,16 @@ content is the answer.
 
 import sys
 
+
 def process_file(path):
-    print "process %s" % path 
+    print "process %s" % path
     try:
         index = open(path)
         output = open("result.md", "w")
         for entry in index:
             try:
                 quiz = open(entry.rstrip())
-                output.write("\n\n%s \n\n" %  entry.rstrip())
+                output.write("\n\n%s \n\n" % entry.rstrip())
                 for line in quiz:
                     output.write("    %s\n" % line.rstrip())
                 quiz.close()

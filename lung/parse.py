@@ -6,6 +6,7 @@ import re
 section_marker = re.compile(r'\s*###\s*(.*)')
 header_marker = re.compile(r'\s*#')
 
+
 class Sections:
 
     def __init__(self):
@@ -33,21 +34,21 @@ class Sections:
 
                 section = Part(filename, linenumber)
 
-            if section: 
+            if section:
                 if is_section_marker:
                     section.addHeader(l)
-                elif not is_header_marker: 
+                elif not is_header_marker:
                     section.addline(l.rstrip())
 
             if not paragraph and not is_space and not is_header_marker:
                 paragraph = Part(filename, linenumber)
 
             if paragraph:
-                  if not is_space and not is_header_marker:
-                      paragraph.addline(l.rstrip())
-                  else:
-                      self.paragraphs.append(paragraph)
-                      paragraph = None
+                if not is_space and not is_header_marker:
+                    paragraph.addline(l.rstrip())
+                else:
+                    self.paragraphs.append(paragraph)
+                    paragraph = None
 
         if paragraph:
             self.paragraphs.append(paragraph)
@@ -55,7 +56,9 @@ class Sections:
         if section:
             self.sections.append(section)
 
+
 class Part:
+
     def __init__(self, filename, linenumber):
         self.filename = filename
         self.linenumber = linenumber
@@ -72,9 +75,9 @@ class Part:
     def body(self):
         return "".join(self.lines)
 
-
     def __repr__(self):
         return ";".join(["Part", str(self.filename), str(self.linenumber)])
+
 
 def main():
     files = sys.argv[1:]
