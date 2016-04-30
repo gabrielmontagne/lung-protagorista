@@ -1,7 +1,7 @@
 
 from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .lines import lines
-from .weightedrandom import WeightedRandom 
+from .weightedrandom import WeightedRandom
 from hashlib import md5
 import imp
 import os
@@ -20,13 +20,11 @@ factor_on_wrong = 1.7
 factor_on_wrong_with_hint = 1.4
 dynamic_module_count = 0
 break_prefixes = (
-  '%__ END __'
-, '<!-- END -->'
-, '<!-- SOURCE -->'
-, '----'
+    '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----'
 )
 
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
+
 
 def initial_factor_from(line):
     weight = initial_factor_extract.match(line)
@@ -34,6 +32,7 @@ def initial_factor_from(line):
         return None
 
     return float(weight.groups()[0])
+
 
 class Quiz:
 
@@ -51,7 +50,8 @@ class Quiz:
         configuration = self.configuration
 
         def grep(e):
-            if not configuration.g: return True
+            if not configuration.g:
+                return True
             return any(
                 pattern in line
                 for pattern in configuration.g
@@ -95,12 +95,13 @@ class Quiz:
     def ask(self):
 
         if self.current_q_index is not None:
-            index = min(self.current_q_index, len(self.questions) -1 )
-            question = self.questions[ index ]
+            index = min(self.current_q_index, len(self.questions) - 1)
+            question = self.questions[index]
             question_id = self.hash_for_question(question)
             self.sequential_index = index + 1
         elif self.sequential_run:
-            question = self.questions[self.sequential_index % len(self.questions)]
+            question = self.questions[
+                self.sequential_index % len(self.questions)]
             question_id = self.hash_for_question(question)
             self.sequential_index += 1
         else:
@@ -117,7 +118,7 @@ class Quiz:
 
         def record_weight():
             question_weights[question_id] = max(
-                    min(weight, max_factor), min_factor)
+                min(weight, max_factor), min_factor)
 
         while True:
             try:
@@ -126,8 +127,10 @@ class Quiz:
 
                 if hint:
                     if not self.lock_weights:
-                            if previous_hint: weight *= factor_on_wrong_with_hint
-                            else: weight *= factor_on_wrong
+                        if previous_hint:
+                            weight *= factor_on_wrong_with_hint
+                        else:
+                            weight *= factor_on_wrong
 
                     streak = 0
                     previous_hint = hint
@@ -136,13 +139,14 @@ class Quiz:
 
                 if not previous_hint:
                     if not self.lock_weights:
-                            weight *= factor_on_correct
+                        weight *= factor_on_correct
 
                     record_weight()
                     break
 
                 streak += 1
-                if streak > self.correct_in_row: break
+                if streak > self.correct_in_row:
+                    break
 
             except QuestionAbort:
                 return
@@ -184,7 +188,8 @@ class Quiz:
                     question_weights[question_id] = 1
 
             else:
-                log.write(question_id + ", factor: " + str(question_weights[question_id]) + "\n")
+                log.write(question_id + ", factor: " +
+                          str(question_weights[question_id]) + "\n")
 
             question_by_id[question_id] = q
             questions_for_random[question_id] = question_weights[question_id]
@@ -200,6 +205,7 @@ class Quiz:
 
 
 class ListParser:
+
     def __init__(self, lines, name):
         self.dictify(lines, name)
 
@@ -222,7 +228,7 @@ class ListParser:
             if re.search(r'^#', line):
                 continue
 
-            current_item = { 'q': [ clean_line ] , 'a': [ 'ok' ], 'ln': line_number }
+            current_item = {'q': [clean_line], 'a': ['ok'], 'ln': line_number}
 
             weight_factor = initial_factor_from(clean_line)
             if weight_factor is not None:
@@ -240,7 +246,9 @@ class ListParser:
     def get_questions(self):
         return self.questions
 
+
 class LungParser:
+
     def __init__(self, lines, name):
         self.dictify(lines, name)
 
@@ -249,7 +257,7 @@ class LungParser:
         current_item = None
         line_number = 0
         for line in lines:
-            line_number +=  1
+            line_number += 1
             if len(line.strip()) == 0:
                 continue
 
@@ -266,11 +274,12 @@ class LungParser:
             if re.search("^\S", line):
                 if current_item and len(current_item['a']):
                     questions.append(current_item)
-                    current_item = None;
+                    current_item = None
 
                 if current_item == None:
 
-                    current_item = {'q': [line.strip()], 'a': [], 'ln': line_number}
+                    current_item = {
+                        'q': [line.strip()], 'a': [], 'ln': line_number}
 
                     weight_factor = initial_factor_from(line)
                     if weight_factor is not None:
@@ -291,7 +300,7 @@ class LungParser:
             answer = re.sub(r"^( ){,4}",  "",  line)
             answer = re.sub(r"#%.*", "", answer)
             answer = re.sub(r"//%.*", "", answer)
-            answer = answer.rstrip();
+            answer = answer.rstrip()
 
             current_item['a'].append(answer)
 
