@@ -1,11 +1,34 @@
+from .ask import Asker
+from .q import Quiz
 import cmd
-import re
 import os
-
-# from .ask import Asker
-
+import re
 
 print('ok')
+
+class CMDAsker(Asker):
+    def ask(self, question, hint=''):
+
+        print('ask question', question, hint)
+
+        r = input('tons> ')
+
+        answer_lines = self.bleach_lines(question['a'])
+        input_lines = self.bleach_lines([ r ])
+
+
+        if input_lines == answer_lines:
+            return ''
+
+        return '\n'.join(self.differ.compare(input_lines, answer_lines))
+
+class CMDQuiz(Quiz):
+
+    asker = CMDAsker()
+
+    def __init__(self, configuration):
+        print('un CMD Quizzu', configuration)
+        super().__init__(configuration)
 
 class LungCMD(cmd.Cmd):
 
@@ -25,4 +48,3 @@ class LungCMD(cmd.Cmd):
 
     def precmd(self, line):
         return line.replace(':', '_')
-

@@ -199,11 +199,6 @@ class Quiz:
         return md5(("\n".join(q['q'])).encode()).hexdigest()
 
 
-class CMDQuiz(Quiz):
-    def __init__(self, configuration):
-        print('un CMD Quizzu', configuration)
-        super().__init__(configuration)
-
 class ListParser:
     def __init__(self, lines, name):
         self.dictify(lines, name)

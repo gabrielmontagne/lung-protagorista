@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+import cmd
 import difflib
 import os
 import re
@@ -10,9 +9,11 @@ STOP = "@@ stop @@"
 SEPARATOR = "@@ ============"
 VIM_FT = "@@ vim:ft=diff:fo="
 
+
+
 class Asker:
-    def __init__(self):
-        self.differ = difflib.Differ()
+
+    differ = difflib.Differ()
 
     def ask(self, question, hint=""):
 

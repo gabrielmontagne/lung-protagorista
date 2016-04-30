@@ -1,6 +1,7 @@
 """CLI for lung drill runner"""
 
-from .q import Quiz, CMDQuiz
+from .q import Quiz
+from .cmd import CMDQuiz
 import argparse
 import sys
 
