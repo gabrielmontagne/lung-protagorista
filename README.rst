@@ -1,6 +1,6 @@
 lung protagorista
 ====================
-:version:0.2.0
+:version:1.0.0
 :author:Gabriel Montagné Láscaris-Comneno gabriel@tibas.london
 
 very bespoke drill tool.
