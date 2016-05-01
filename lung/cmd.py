@@ -45,7 +45,7 @@ class CMDAsker(Asker):
         os.system('clear')
 
         if hint:
-            print('>' * 10)
+            print(question['weight'], '>' * 11)
             print(hint)
             print('<' * 10)
 
