@@ -1,5 +1,5 @@
 lung protagorista
-====================
+=================
 :version:1.0.2
 :author:Gabriel Montagné Láscaris-Comneno gabriel@tibas.london
 
@@ -20,7 +20,7 @@ to use::
 
     lung --help
 
-dice::
+which prints::
 
   usage: lung [-h] [-s] [-f F [F ...]] [-l L [L ...]] [-m M [M ...]] [-c [C]]
               [-qs [QS]] [-g G [G ...]] [-lw]
@@ -40,6 +40,6 @@ dice::
 sintaxis
 -------------
 
-para correr un comando::
+to run a command::
 
   ex: xmessage "ok"
