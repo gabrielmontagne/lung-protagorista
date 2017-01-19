@@ -23,6 +23,9 @@ break_prefixes = (
     '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----'
 )
 
+comment_prefixes = ('x', '#', '//')
+
+
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 
@@ -222,10 +225,7 @@ class ListParser:
             if line.startswith(break_prefixes):
                 break
 
-            if re.search(r'^x ', line):
-                continue
-
-            if re.search(r'^#', line):
+            if line.startswith(comment_prefixes):
                 continue
 
             current_item = {'q': [clean_line], 'a': ['ok'], 'ln': line_number}
