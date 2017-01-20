@@ -40,11 +40,14 @@ class Quiz:
 
     def __init__(self, configuration):
 
+        log.debug('quiz init')
+
         self.configuration = configuration
         self.current_q_index = None
         self.create_questions()
 
     def create_questions(self):
+
         global dynamic_module_count
 
         configuration = self.configuration
@@ -126,9 +129,16 @@ class Quiz:
             try:
                 question['weight'] = weight
                 hint = self.asker.ask(question, hint)
+                first_run = question.get('first_run', False)
 
                 if hint:
-                    if not self.lock_weights:
+
+                    if first_run:
+                        log.debug('wrong answer on first run -- present with hint')
+                    else:
+                        log.debug('wrong answer -- present with hint')
+
+                    if not self.lock_weights and not first_run:
                         if previous_hint:
                             weight *= factor_on_wrong_with_hint
                         else:
@@ -138,6 +148,8 @@ class Quiz:
                     previous_hint = hint
                     record_weight()
                     continue
+
+                question['first_run'] = False
 
                 if not previous_hint:
                     if not self.lock_weights:
@@ -176,19 +188,19 @@ class Quiz:
         for q in self.questions:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
-                log.debug("initialize factor for q: " + question_id + "\n")
+                log.debug("initialize factor for q: " + question_id[:5] + "\n")
 
                 if 'initial-factor' in q:
                     question_weights[question_id] = q['initial-factor']
 
                 else:
-                    # default initialization -- perhaps flag it in here?
+                    log.debug('First run for question {}'.format(question_id[:5]))
                     question_weights[question_id] = 1
                     q['first_run'] = True
 
 
             else:
-                log.debug(question_id + ", factor: " +
+                log.debug(question_id[:5] + ", factor: " +
                           str(question_weights[question_id]) + "\n")
 
             question_by_id[question_id] = q
