@@ -13,7 +13,7 @@ def process_file(path):
     print "process %s" % path
     try:
         index = open(path)
-        output = open("result.md", "w")
+        output = open("result.adoc", "w")
         for entry in index:
             try:
                 quiz = open(entry.rstrip())

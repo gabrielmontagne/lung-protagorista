@@ -1,5 +1,7 @@
 import random
+import logging
 
+log = logging.getLogger(__name__)
 
 class WeightedRandom:
 
@@ -17,6 +19,7 @@ class WeightedRandom:
         total = 0
         core_list = []
         weights = self.weights
+        log.debug('recalculating core list')
         for k in weights:
             weight = weights[k]
             total = total + weight
