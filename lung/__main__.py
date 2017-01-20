@@ -4,9 +4,22 @@ from .q import Quiz
 from .cmd import CMDQuiz
 import argparse
 import sys
+import logging
+import os
+
+
+
+def initialize_lung_config():
+    config_path = os.path.expanduser("~/.lung")
+    os.makedirs(config_path, exist_ok=True)
+    logging.basicConfig(filename=os.path.join(config_path, 'run.log'), level=logging.DEBUG)
 
 
 def main():
+
+    initialize_lung_config()
+
+    logging.info('\n\nstart lung run')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", action='store_true',

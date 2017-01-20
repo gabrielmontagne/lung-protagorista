@@ -4,29 +4,26 @@ from .lines import lines
 from .weightedrandom import WeightedRandom
 from hashlib import md5
 import imp
+import logging
 import os
 import re
 import shelve
 import sys
 import time
 
-config_path = os.path.expanduser("~/.lung")
 weights_file = os.path.expanduser("~/.lung/weights")
-log_file = os.path.expanduser("~/.lung/run.log")
-min_factor = 0.1
-max_factor = 100
-factor_on_correct = 0.5
-factor_on_wrong = 1.7
-factor_on_wrong_with_hint = 1.4
+min_factor = 0.2
+max_factor = 20
+factor_on_correct = 0.7
+factor_on_wrong = 1.2
+factor_on_wrong_with_hint = 1.2
 dynamic_module_count = 0
-break_prefixes = (
-    '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----'
-)
 
+break_prefixes = ( '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----')
 comment_prefixes = ('x', '#', '//')
-
-
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
+
+log = logging.getLogger(__name__)
 
 
 def initial_factor_from(line):
@@ -102,6 +99,8 @@ class Quiz:
             question = self.questions[index]
             question_id = self.hash_for_question(question)
             self.sequential_index = index + 1
+
+
         elif self.sequential_run:
             question = self.questions[
                 self.sequential_index % len(self.questions)]
@@ -172,32 +171,28 @@ class Quiz:
         question_by_id = {}
         questions_for_random = {}
 
-        if not os.access(config_path, os.F_OK):
-            os.mkdir(config_path)
-
-        log = open(log_file, "a")
-        log.write("\nweigh questions\n")
-
         question_weights = shelve.open(weights_file)
 
         for q in self.questions:
             question_id = self.hash_for_question(q)
             if not question_id in question_weights:
-                log.write("initialize factor for q: " + question_id + "\n")
+                log.debug("initialize factor for q: " + question_id + "\n")
 
                 if 'initial-factor' in q:
                     question_weights[question_id] = q['initial-factor']
+
                 else:
+                    # default initialization -- perhaps flag it in here?
                     question_weights[question_id] = 1
+                    q['first_run'] = True
+
 
             else:
-                log.write(question_id + ", factor: " +
+                log.debug(question_id + ", factor: " +
                           str(question_weights[question_id]) + "\n")
 
             question_by_id[question_id] = q
             questions_for_random[question_id] = question_weights[question_id]
-
-        log.close()
 
         self.question_by_id = question_by_id
         self.weightedrandom.set_weights(questions_for_random)
@@ -282,10 +277,10 @@ class LungParser:
                         'q': [line.strip()], 'a': [], 'ln': line_number}
 
                     weight_factor = initial_factor_from(line)
-                    if weight_factor is not None:
+                    if weight_factor:
                         current_item['initial-factor'] = weight_factor
 
-                    if name is not None:
+                    if name:
                         current_item['n'] = name
                     else:
                         print("Input doesn't have a name.")
