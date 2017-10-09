@@ -3,6 +3,7 @@ from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .lines import lines
 from .weightedrandom import WeightedRandom
 from hashlib import md5
+from itertools import groupby
 import imp
 import logging
 import os
@@ -25,6 +26,8 @@ initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 log = logging.getLogger(__name__)
 
+def is_comment(line):
+    return line.startswith(comment_prefixes)
 
 def initial_factor_from(line):
     weight = initial_factor_extract.match(line)
@@ -66,6 +69,11 @@ class Quiz:
         if configuration.f:
             for f in configuration.f:
                 p = LungParser(lines(f), f)
+                q.extend(filter(grep, p.get_questions()))
+
+        if configuration.cc:
+            for cc in configuration.cc:
+                p = PerCommentsParser(lines(cc), cc)
                 q.extend(filter(grep, p.get_questions()))
 
         if configuration.m:
@@ -252,6 +260,28 @@ class ListParser:
 
     def get_questions(self):
         return self.questions
+
+class PerCommentsParser:
+
+    def __init__(self, lines, name):
+        print('PerCommentsParser')
+
+
+        print(list(groupby(lines, is_comment)))
+
+
+        raise Exception('OK for now')
+
+    def get_questions(self):
+        print('get questions')
+
+
+        
+
+
+
+
+        return [ {'q': ['uno'], 'a': ['UNO'], 'ln': 1}]
 
 
 class LungParser:
