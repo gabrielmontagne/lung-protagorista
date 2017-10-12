@@ -2,8 +2,10 @@
 from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .lines import lines
 from .weightedrandom import WeightedRandom
+from functools import reduce
 from hashlib import md5
 from itertools import groupby
+from math import inf
 import imp
 import logging
 import os
@@ -21,13 +23,19 @@ factor_on_wrong_with_hint = 1.2
 dynamic_module_count = 0
 
 break_prefixes = ( '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----')
-comment_prefixes = ('x', '#', '//')
+comment_prefixes = ('#', '//')
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 log = logging.getLogger(__name__)
 
 def is_comment(line):
-    return line.startswith(comment_prefixes)
+    return line.lstrip().startswith(comment_prefixes)
+
+def remove_comment(line):
+    for prefix in comment_prefixes:
+        line = re.sub(prefix, '', line)
+
+    return line
 
 def initial_factor_from(line):
     weight = initial_factor_extract.match(line)
@@ -35,6 +43,16 @@ def initial_factor_from(line):
         return None
 
     return float(weight.groups()[0])
+
+def remove_outer_indent(lines):
+    min_indent = reduce(
+        lambda x, y: min(x, len(y) - len(y.lstrip())),
+        lines,
+        inf
+    )
+
+    print('min indent', min_indent, lines)
+    return [l[min_indent:] for l in lines]
 
 
 class Quiz:
@@ -269,19 +287,38 @@ class PerCommentsParser:
 
         print(list(groupby(lines, is_comment)))
 
+        questions = []
+        q = None
+
+        for chunk in groupby(lines, is_comment):
+            print('\n' * 2)
+            if chunk[0]:
+                print('============ Q')
+                q = {
+                    'q': remove_outer_indent([remove_comment(c).rstrip() for c in chunk[1]])
+                }
+
+            else:
+                print('------------ A')
+                if not q:
+                    q = {
+                        'q': ['Preamble']
+                    }
+
+                q['a'] = remove_outer_indent([a.rstrip() for a in chunk[1] if a.strip()])
+
+                questions.append(q)
+                print(q, len(q['q']), len(q['a']))
+                q = None
+
+
+        self.questions = questions
+
 
         raise Exception('OK for now')
 
     def get_questions(self):
-        print('get questions')
-
-
-        
-
-
-
-
-        return [ {'q': ['uno'], 'a': ['UNO'], 'ln': 1}]
+        return self.questions
 
 
 class LungParser:
