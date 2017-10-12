@@ -29,7 +29,7 @@ initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 log = logging.getLogger(__name__)
 
 def is_comment(line):
-    return line.lstrip().startswith(comment_prefixes)
+    return line[1].lstrip().startswith(comment_prefixes)
 
 def remove_comment(line):
     for prefix in comment_prefixes:
@@ -51,7 +51,6 @@ def remove_outer_indent(lines):
         inf
     )
 
-    print('min indent', min_indent, lines)
     return [l[min_indent:] for l in lines]
 
 
@@ -282,21 +281,21 @@ class ListParser:
 class PerCommentsParser:
 
     def __init__(self, lines, name):
-        print('PerCommentsParser')
-
-
-        print(list(groupby(lines, is_comment)))
 
         questions = []
         q = None
 
-        for chunk in groupby(lines, is_comment):
+        for chunk in groupby(enumerate(lines), is_comment):
             print('\n' * 2)
             if chunk[0]:
                 print('============ Q')
+                q_lines = list(chunk[1])
                 q = {
-                    'q': remove_outer_indent([remove_comment(c).rstrip() for c in chunk[1]])
+                    'q': remove_outer_indent([remove_comment(c[1]).rstrip() for c in q_lines]),
+                    'ln': q_lines[0][0] + 1,
                 }
+                if name:
+                    q['n'] = name
 
             else:
                 print('------------ A')
@@ -305,7 +304,7 @@ class PerCommentsParser:
                         'q': ['Preamble']
                     }
 
-                q['a'] = remove_outer_indent([a.rstrip() for a in chunk[1] if a.strip()])
+                q['a'] = remove_outer_indent([a[1].rstrip() for a in chunk[1] if a[1].strip()])
 
                 questions.append(q)
                 print(q, len(q['q']), len(q['a']))
