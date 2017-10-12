@@ -1,4 +1,3 @@
-
 from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .lines import lines
 from .weightedrandom import WeightedRandom
@@ -22,14 +21,16 @@ factor_on_wrong = 1.2
 factor_on_wrong_with_hint = 1.2
 dynamic_module_count = 0
 
-break_prefixes = ( '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----')
+break_prefixes = ('%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----')
 comment_prefixes = ('#', '//')
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 log = logging.getLogger(__name__)
 
+
 def is_comment(line):
     return line[1].lstrip().startswith(comment_prefixes)
+
 
 def remove_comment(line):
     for prefix in comment_prefixes:
@@ -37,12 +38,14 @@ def remove_comment(line):
 
     return line
 
+
 def initial_factor_from(line):
     weight = initial_factor_extract.match(line)
     if not weight:
         return None
 
     return float(weight.groups()[0])
+
 
 def remove_outer_indent(lines):
     min_indent = reduce(
@@ -128,7 +131,6 @@ class Quiz:
             question_id = self.hash_for_question(question)
             self.sequential_index = index + 1
 
-
         elif self.sequential_run:
             question = self.questions[
                 self.sequential_index % len(self.questions)]
@@ -159,7 +161,8 @@ class Quiz:
                 if hint:
 
                     if first_run:
-                        log.debug('wrong answer on first run -- present with hint')
+                        log.debug(
+                            'wrong answer on first run -- present with hint')
                     else:
                         log.debug('wrong answer -- present with hint')
 
@@ -219,10 +222,10 @@ class Quiz:
                     question_weights[question_id] = q['initial-factor']
 
                 else:
-                    log.debug('First run for question {}'.format(question_id[:5]))
+                    log.debug('First run for question {}'.format(
+                        question_id[:5]))
                     question_weights[question_id] = 1
                     q['first_run'] = True
-
 
             else:
                 log.debug(question_id[:5] + ", factor: " +
@@ -278,6 +281,7 @@ class ListParser:
     def get_questions(self):
         return self.questions
 
+
 class PerCommentsParser:
 
     def __init__(self, lines, name):
@@ -286,9 +290,7 @@ class PerCommentsParser:
         q = None
 
         for chunk in groupby(enumerate(lines), is_comment):
-            print('\n' * 2)
             if chunk[0]:
-                print('============ Q')
                 q_lines = list(chunk[1])
                 q = {
                     'q': remove_outer_indent([remove_comment(c[1]).rstrip() for c in q_lines]),
@@ -298,23 +300,22 @@ class PerCommentsParser:
                     q['n'] = name
 
             else:
-                print('------------ A')
                 if not q:
                     q = {
-                        'q': ['Preamble']
+                        'q': ['Preamble'],
+                        'ln': 1
                     }
 
-                q['a'] = remove_outer_indent([a[1].rstrip() for a in chunk[1] if a[1].strip()])
+                    if name:
+                        q['n'] = name
+
+                q['a'] = remove_outer_indent(
+                    [a[1].rstrip() for a in chunk[1] if a[1].strip()])
 
                 questions.append(q)
-                print(q, len(q['q']), len(q['a']))
                 q = None
 
-
         self.questions = questions
-
-
-        raise Exception('OK for now')
 
     def get_questions(self):
         return self.questions
