@@ -1,8 +1,10 @@
-
 from .ask import Asker, QuestionAbort, AbortAndReload, Quit
 from .lines import lines
 from .weightedrandom import WeightedRandom
+from functools import reduce
 from hashlib import md5
+from itertools import groupby
+from math import inf
 import imp
 import logging
 import os
@@ -19,11 +21,22 @@ factor_on_wrong = 1.2
 factor_on_wrong_with_hint = 1.2
 dynamic_module_count = 0
 
-break_prefixes = ( '%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----')
-comment_prefixes = ('x', '#', '//')
+break_prefixes = ('%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----', '#__ END __')
+comment_prefixes = ('#', '//')
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 log = logging.getLogger(__name__)
+
+
+def is_comment(line):
+    return line[1].lstrip().startswith(comment_prefixes)
+
+
+def remove_comment(line):
+    for prefix in comment_prefixes:
+        line = re.sub(prefix, '', line)
+
+    return line
 
 
 def initial_factor_from(line):
@@ -32,6 +45,16 @@ def initial_factor_from(line):
         return None
 
     return float(weight.groups()[0])
+
+
+def remove_outer_indent(lines):
+    min_indent = reduce(
+        lambda x, y: min(x, len(y) - len(y.lstrip())),
+        lines,
+        inf
+    )
+
+    return [l[min_indent:] for l in lines]
 
 
 class Quiz:
@@ -66,6 +89,11 @@ class Quiz:
         if configuration.f:
             for f in configuration.f:
                 p = LungParser(lines(f), f)
+                q.extend(filter(grep, p.get_questions()))
+
+        if configuration.cc:
+            for cc in configuration.cc:
+                p = PerCommentsParser(lines(cc), cc)
                 q.extend(filter(grep, p.get_questions()))
 
         if configuration.m:
@@ -103,7 +131,6 @@ class Quiz:
             question_id = self.hash_for_question(question)
             self.sequential_index = index + 1
 
-
         elif self.sequential_run:
             question = self.questions[
                 self.sequential_index % len(self.questions)]
@@ -134,7 +161,8 @@ class Quiz:
                 if hint:
 
                     if first_run:
-                        log.debug('wrong answer on first run -- present with hint')
+                        log.debug(
+                            'wrong answer on first run -- present with hint')
                     else:
                         log.debug('wrong answer -- present with hint')
 
@@ -194,10 +222,10 @@ class Quiz:
                     question_weights[question_id] = q['initial-factor']
 
                 else:
-                    log.debug('First run for question {}'.format(question_id[:5]))
+                    log.debug('First run for question {}'.format(
+                        question_id[:5]))
                     question_weights[question_id] = 1
                     q['first_run'] = True
-
 
             else:
                 log.debug(question_id[:5] + ", factor: " +
@@ -247,6 +275,45 @@ class ListParser:
                 print("Input doesn't have a name.")
 
             questions.append(current_item)
+
+        self.questions = questions
+
+    def get_questions(self):
+        return self.questions
+
+
+class PerCommentsParser:
+
+    def __init__(self, lines, name):
+
+        questions = []
+        q = None
+
+        for chunk in groupby(enumerate(lines), is_comment):
+            if chunk[0]:
+                q_lines = list(chunk[1])
+                q = {
+                    'q': remove_outer_indent([remove_comment(c[1]).rstrip() for c in q_lines]),
+                    'ln': q_lines[0][0] + 1,
+                }
+                if name:
+                    q['n'] = name
+
+            else:
+                if not q:
+                    q = {
+                        'q': ['Preamble'],
+                        'ln': 1
+                    }
+
+                    if name:
+                        q['n'] = name
+
+                q['a'] = remove_outer_indent(
+                    [a[1].rstrip() for a in chunk[1] if a[1].strip()])
+
+                questions.append(q)
+                q = None
 
         self.questions = questions
 

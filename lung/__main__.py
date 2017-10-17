@@ -26,6 +26,7 @@ def main():
                         help='sequential (non random)', required=False)
     parser.add_argument('-f', nargs='+', required=False, help='files')
     parser.add_argument('-l', nargs='+', required=False, help='lists')
+    parser.add_argument('-cc', nargs='+', required=False, help='flat, per comments')
     parser.add_argument('-m', nargs='+', type=str,
                         required=False, help='modules')
     parser.add_argument('-c', nargs='?', type=int, default=3,
