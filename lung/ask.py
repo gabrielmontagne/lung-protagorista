@@ -45,6 +45,8 @@ class Asker:
                 raise Quit('quitting')
             if input_lines[0] == ':skip':
                 raise QuestionAbort('aborting')
+            if input_lines[0] == ':show':
+                raise AnswerShow('show and continue')
             if input_lines[0] == ':reload':
                 raise AbortAndReload('aborting')
 
@@ -85,6 +87,8 @@ class Asker:
         os.unlink(f.name)
         return results
 
+class AnswerShow(Exception):
+    pass
 
 class QuestionAbort(Exception):
     pass

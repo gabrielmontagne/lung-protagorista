@@ -1,4 +1,4 @@
-from .ask import Asker, QuestionAbort, AbortAndReload, Quit
+from .ask import Asker, QuestionAbort, AnswerShow, AbortAndReload, Quit
 from .lines import lines
 from .weightedrandom import WeightedRandom
 from functools import reduce
@@ -189,6 +189,11 @@ class Quiz:
                 streak += 1
                 if streak > self.correct_in_row:
                     break
+
+            except AnswerShow:
+                question['first_run'] = False
+                hint = '\n'.join(question['a'])
+                streak = 0
 
             except QuestionAbort:
                 return
