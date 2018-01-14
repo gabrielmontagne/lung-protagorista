@@ -21,7 +21,7 @@ factor_on_wrong = 1.2
 factor_on_wrong_with_hint = 1.2
 dynamic_module_count = 0
 
-break_prefixes = ('%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----', '#__ END __')
+break_prefixes = ('%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----', '#__ END __', '//__ END __')
 comment_prefixes = ('#', '//')
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
