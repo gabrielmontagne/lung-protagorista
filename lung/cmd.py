@@ -50,8 +50,11 @@ class CMDAsker(Asker):
             print('<' * 10)
 
         command = LungCMD(len(question['a']) == 1)
-        command.cmdloop(
-            '\n'.join([question.get('n', '--')] + self.preprocess_question_lines(question['q'])))
+        try:
+            command.cmdloop(
+                '\n'.join([question.get('n', '--')] + self.preprocess_question_lines(question['q'])))
+        except KeyboardInterrupt:
+            pass
 
         answer_lines = self.bleach_lines(question['a'])
         input_lines = self.bleach_lines(command.result)
