@@ -19,22 +19,23 @@ usage
 to use::
 
     lung --help
+     
+    usage: lung [-h] [-s] [-f F [F ...]] [-l L [L ...]] [-cc CC [CC ...]]
+                [-m M [M ...]] [-c [C]] [-qs [QS]] [-g G [G ...]] [-lw] [-cmd]
 
-which prints::
+    optional arguments:
+      -h, --help       show this help message and exit
+      -s               sequential (non random)
+      -f F [F ...]     files
+      -l L [L ...]     lists
+      -cc CC [CC ...]  flat, per comments
+      -m M [M ...]     modules
+      -c [C]           correct retries
+      -qs [QS]         cuestion count
+      -g G [G ...]     question grep
+      -lw              lock weight
+      -cmd             interactive CMD
 
-  usage: lung [-h] [-s] [-f F [F ...]] [-l L [L ...]] [-m M [M ...]] [-c [C]]
-              [-qs [QS]] [-g G [G ...]] [-lw]
-
-  optional arguments:
-    -h, --help    show this help message and exit
-    -s            sequential (non random)
-    -f F [F ...]  files
-    -l L [L ...]  lists
-    -m M [M ...]  modules
-    -c [C]        correct retries
-    -qs [QS]      cuestion count
-    -g G [G ...]  question grep
-    -lw           lock weight
 
 
 sintaxis
@@ -43,3 +44,11 @@ sintaxis
 to run a command::
 
   ex: xmessage "ok"
+
+
+to assign an arbitrary initial weight to a question, start it with
+
+  ^[W:x] 
+
+where x is a float (needs the .) of the original weight.
+the default assigned is 1.0  so 2.0 will make the item twice as likely to show up.
