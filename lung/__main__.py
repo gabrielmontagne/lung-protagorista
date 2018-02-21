@@ -39,7 +39,7 @@ def main():
 
     parser.add_argument('-cmd', action='store_true', help='interactive CMD')
 
-    configuration = parser.parse_args()
+    configuration = parser.parse_known_args()[0]
 
     if not configuration.cmd:
         quiz = Quiz(configuration)
