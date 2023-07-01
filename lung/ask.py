@@ -49,6 +49,8 @@ class Asker:
                 raise AnswerShow('show and continue')
             if input_lines[0] == ':reload':
                 raise AbortAndReload('aborting')
+            if input_lines[0] == ':ok':
+                return ""
 
         answer_lines = self.bleach_lines(question['a'])
 
