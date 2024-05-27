@@ -246,7 +246,6 @@ class Quiz:
     def hash_for_question(self, q):
         return md5(("\n".join(q['q'])).encode()).hexdigest()
 
-
 class ListParser:
 
     def __init__(self, lines, name):
@@ -256,7 +255,7 @@ class ListParser:
         questions = []
         line_number = 0
         for line in lines:
-            line_number = line_number + 1
+            line_number += 1
             clean_line = re.sub('^\d+\.\s+', '', line)
 
             if len(line.strip()) == 0:
@@ -268,9 +267,14 @@ class ListParser:
             if line.startswith(comment_prefixes):
                 continue
 
-            current_item = {'q': [clean_line], 'a': ['ok'], 'ln': line_number}
+            # Split the line using '|'
+            parts = clean_line.split('|', 1)
+            question_text = parts[0].strip()
+            answer_text = parts[1].strip() if len(parts) > 1 else 'ok'
 
-            weight_factor = initial_factor_from(clean_line)
+            current_item = {'q': [question_text], 'a': [answer_text], 'ln': line_number}
+
+            weight_factor = initial_factor_from(question_text)
             if weight_factor is not None:
                 current_item['initial-factor'] = weight_factor
 
