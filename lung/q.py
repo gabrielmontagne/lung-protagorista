@@ -23,6 +23,7 @@ dynamic_module_count = 0
 
 break_prefixes = ('%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----', '#__ END __', '//__ END __')
 comment_prefixes = ('#', '//')
+comment_prefixes_list_ext = ('<<', '@@', '{{')
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 log = logging.getLogger(__name__)
@@ -265,6 +266,9 @@ class ListParser:
                 break
 
             if line.startswith(comment_prefixes):
+                continue
+
+            if line.startswith(comment_prefixes_list_ext):
                 continue
 
             # Split the line using '|'
