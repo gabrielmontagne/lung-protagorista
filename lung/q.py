@@ -11,7 +11,6 @@ import os
 import re
 import shelve
 import sys
-import time
 
 weights_file = os.path.expanduser("~/.lung/weights")
 min_factor = 0.2
@@ -22,8 +21,9 @@ factor_on_wrong_with_hint = 1.2
 dynamic_module_count = 0
 
 break_prefixes = ('%__ END __', '<!-- END -->', '<!-- SOURCE -->', '----', '#__ END __', '//__ END __')
+
 comment_prefixes = ('#', '//')
-comment_prefixes_list_ext = ('<<', '@@', '{{')
+comment_prefixes_list_ext = ('<<', '@@', '{{', '[x]')
 initial_factor_extract = re.compile(r'\^\[W:(\d+\.\d+)\]', re.I)
 
 log = logging.getLogger(__name__)
@@ -257,7 +257,7 @@ class ListParser:
         line_number = 0
         for line in lines:
             line_number += 1
-            clean_line = re.sub('^\d+\.\s+', '', line)
+            clean_line = re.sub(r'^\[ \] \d+\s+', '', line)
 
             if len(line.strip()) == 0:
                 continue
