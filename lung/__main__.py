@@ -29,7 +29,7 @@ def main():
     parser.add_argument('-cc', nargs='+', required=False, help='flat, per comments')
     parser.add_argument('-m', nargs='+', type=str,
                         required=False, help='modules')
-    parser.add_argument('-c', nargs='?', type=int, default=2,
+    parser.add_argument('-c', nargs='?', type=int, default=3,
                         required=False, help='correct retries')
     parser.add_argument('-qs', nargs='?', type=int, default=50,
                         required=False, help='cuestion count')
