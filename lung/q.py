@@ -150,6 +150,7 @@ class Quiz:
         def record_weight():
             question_weights[question_id] = max(
                 min(weight, max_factor), min_factor)
+            question_weights.sync()
 
         while True:
             try:
@@ -230,6 +231,9 @@ class Quiz:
                         question_id[:5]))
                     question_weights[question_id] = 1
                     q['first_run'] = True
+
+
+                question_weights.sync()
 
             else:
                 log.debug(question_id[:5] + ", factor: " +
