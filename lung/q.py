@@ -104,7 +104,8 @@ class Quiz:
                         'dyn' + str(dynamic_module_count), m)
                     dynamic_module_count += 1
                 else:
-                    module = __import__(m)
+                    import importlib
+                    module = importlib.import_module(m)
 
                 q.extend(filter(grep, module.get_questions()))
 
@@ -261,7 +262,7 @@ class ListParser:
         line_number = 0
         for line in lines:
             line_number += 1
-            clean_line = re.sub(r'^\[ \] \d+\s+', '', line)
+            clean_line = re.sub(r'^\[ \]\s*\d*\s+', '', line)
 
             if len(line.strip()) == 0:
                 continue

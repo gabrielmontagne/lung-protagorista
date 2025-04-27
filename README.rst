@@ -52,3 +52,14 @@ to assign an arbitrary initial weight to a question, start it with
 
 where x is a float (needs the .) of the original weight.
 the default assigned is 1.0  so 2.0 will make the item twice as likely to show up.
+
+custom helper modules
+-------------
+
+for built in::
+
+  lung -cmd -m lung.sum
+  lung -cmd -m lung.ranked -- german-1-100.csv german-101-200.csv
+
+the ranked helper module will initialize the default weights from 2..0.7 by line order on the provided lists.
+
